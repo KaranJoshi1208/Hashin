@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1054238295659",
+    "project_id": "hashin-dawgs",
+    "storage_bucket": "hashin-dawgs.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054238295659:android:4a038e040ec6b19601132e",
+        "android_client_info": {
+          "package_name": "com.karan.hashin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuEjoNzA6-AVQaJogrLOlXpaDLXwHff8s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
