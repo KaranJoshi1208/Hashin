@@ -3,6 +3,7 @@ package com.karan.hashin.screens
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import com.karan.hashin.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.getValue
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
@@ -44,6 +46,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -82,6 +85,30 @@ fun AuthScreen(modifier: Modifier = Modifier) {
             )
 
             SignIn(Modifier.padding(top = 92.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+                    .padding(top = 32.dp)
+            ) {
+
+                Text("New to #in ? ", textAlign = TextAlign.Center)
+                Text(
+                    text = "Sign up!",
+                    textAlign = TextAlign.Center,
+                    color = Color.Blue,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier
+                        .clickable(true) {
+                            /*
+                            handle signup logic
+                             */
+                        }
+                )
+            }
         }
     }
 }
@@ -111,6 +138,9 @@ fun SignIn(modifier: Modifier = Modifier) {
             onValueChange = { pass = it },
             label = { Text("Password") },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -157,23 +187,96 @@ fun SignIn(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.width(8.dp))
             Text("Continue with Google")
         }
+    }
+}
+
+
+@Composable
+fun SignUp(modifier: Modifier = Modifier) {
+    var email by remember { mutableStateOf("") }
+    var pass1 by remember { mutableStateOf("") }
+    var pass2 by remember { mutableStateOf("") }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+    ) {
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = pass1,
+            onValueChange = { pass1 = it },
+            label = { Text("Password") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = pass2,
+            onValueChange = { pass2 = it },
+            label = { Text("Confirm Password") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Button(
+            onClick = { /* Handle click */ },
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .width(144.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF673AB7),
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(size = 20.dp)
+        ) {
+            Text("Login")
+        }
+
+//        Spacer(modifier = Modifier.height(8.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
-                .padding(top = 32.dp)
         ) {
+            Spacer(Modifier.weight(1f).height(0.5.dp).background(color = Color.Black))
+            Text("  OR  ", textAlign = TextAlign.Center)
+            Spacer(Modifier.weight(1f).height(0.5.dp).background(color = Color.Black))
+        }
 
-            Text("New to #in ? ", textAlign = TextAlign.Center)
-            Text(
-                text = "Sign up!",
-                textAlign = TextAlign.Center,
-                color = Color.Blue,
-                textDecoration = TextDecoration.Underline
+        OutlinedButton(
+            onClick = { /* TODO(handle Google login) */ },
+            modifier = Modifier
+//                .fillMaxWidth()
+                .padding(top = 8.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.google),
+                contentDescription = "Google",
+                modifier = Modifier
+                    .size(16.dp)
             )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Continue with Google")
         }
     }
 }
