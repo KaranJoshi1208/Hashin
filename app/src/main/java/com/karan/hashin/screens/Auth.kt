@@ -1,5 +1,6 @@
 package com.karan.hashin.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -41,11 +43,20 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.karan.hashin.navigation.Screens
 import com.karan.hashin.ui.theme.HashinTheme
+import com.karan.hashin.utils.isValidEmail
+import com.karan.hashin.viewmodel.AuthViewModel
 
 @Composable
-fun AuthScreen(modifier: Modifier = Modifier) {
-
+fun AuthScreen(
+    authViewModel: AuthViewModel,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
     val isNewUser = remember { mutableStateOf(true) }
 
     Box(
@@ -75,7 +86,16 @@ fun AuthScreen(modifier: Modifier = Modifier) {
             )
 
             if (isNewUser.value) {
-                SignUp(Modifier.padding(top = 64.dp)) { isNewUser.value = false }
+                SignUp(
+                    onSuccess = authViewModel.signUp,
+                    onFailure = {
+                        Toast.makeText(context, "Sign Up Failed !!!", Toast.LENGTH_SHORT).show()
+                    },
+                    onClick = {
+                        isNewUser.value = false
+                    },
+                    modifier = Modifier.padding(top = 64.dp)
+                )
             } else {
                 SignIn(Modifier.padding(top = 72.dp)) { isNewUser.value = true }
             }
@@ -198,13 +218,18 @@ fun SignIn(modifier: Modifier = Modifier, onClick: () -> Unit) {
                     }
             )
         }
-
     }
 }
 
 
 @Composable
-fun SignUp(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun SignUp(
+    onSuccess: (String, String, String, () -> Unit, (Exception) -> Unit) -> Unit,
+    onFailure: (Exception) -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var pass1 by remember { mutableStateOf("") }
@@ -273,7 +298,24 @@ fun SignUp(modifier: Modifier = Modifier, onClick: () -> Unit) {
         )
 
         Button(
-            onClick = { /* Handle click */ },
+            onClick = {
+                if (email.isValidEmail() && (pass1 == pass2)) {
+                    onSuccess(
+                        name,
+                        email,
+                        pass1,
+                        {
+                            Toast.makeText(context, "Sign Up Failed !!!", Toast.LENGTH_SHORT).show()
+                        },
+                        {
+                            Toast.makeText(context, "Sign Up Failed !!!", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else {
+                    onFailure(Exception("Incorrect Details"))
+                }
+
+            },
             modifier = Modifier
                 .padding(top = 16.dp)
                 .width(144.dp),
@@ -314,6 +356,6 @@ fun SignUp(modifier: Modifier = Modifier, onClick: () -> Unit) {
 @Composable
 private fun AuthPreview() {
     HashinTheme {
-        AuthScreen()
+//        AuthScreen(viewModel<AuthViewModel>())
     }
 }
