@@ -24,26 +24,16 @@ import com.karan.hashin.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var provider: ViewModelProvider
     private lateinit var navController: NavHostController
-    private lateinit var authViewModel: AuthViewModel
-    private lateinit var mainViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        provider = ViewModelProvider(
-            this@MainActivity,
-            ViewModelProvider.AndroidViewModelFactory()
-        )
-        authViewModel = provider[AuthViewModel::class.java]
-//        mainViewModel = provider[MainViewModel::class.java]
-
         setContent {
             HashinTheme {
                 navController = rememberNavController()
-                NavGraph(authViewModel, navController)
+                NavGraph(navController)
             }
         }
     }
