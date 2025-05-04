@@ -87,9 +87,15 @@ fun AuthScreen(
 
             if (isNewUser.value) {
                 SignUp(
-                    onSuccess = authViewModel.signUp,
+                    onSuccess = authViewModel::signUp,
                     onFailure = {
-                        Toast.makeText(context, "Sign Up Failed !!!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                    },
+                    navigate = {
+                        navController.navigate(Screens.Home.name) {
+                            popUpTo(Screens.Auth.name) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     },
                     onClick = {
                         isNewUser.value = false
@@ -97,7 +103,22 @@ fun AuthScreen(
                     modifier = Modifier.padding(top = 64.dp)
                 )
             } else {
-                SignIn(Modifier.padding(top = 72.dp)) { isNewUser.value = true }
+                SignIn(
+                    onSuccess = authViewModel::signIn,
+                    onFailure = {
+                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                    },
+                    navigate = {
+                        navController.navigate(Screens.Home.name) {
+                            popUpTo(Screens.Auth.name) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onClick = {
+                        isNewUser.value = true
+                    },
+                    modifier = Modifier.padding(top = 72.dp)
+                )
             }
 
             Row(
@@ -141,7 +162,14 @@ fun AuthScreen(
 }
 
 @Composable
-fun SignIn(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun SignIn(
+    onSuccess: (String, String, () -> Unit, (Exception) -> Unit) -> Unit,
+    onFailure: (Exception) -> Unit,
+    navigate : () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var passVisible by remember { mutableStateOf(false) }
@@ -182,7 +210,23 @@ fun SignIn(modifier: Modifier = Modifier, onClick: () -> Unit) {
         )
 
         Button(
-            onClick = { /* Handle click */ },
+            onClick = {
+                if(email.isValidEmail() && pass.isNotBlank()) {
+                    onSuccess(
+                        email,
+                        pass,
+                        {
+                            navigate()
+                            Toast.makeText(context, "Login Success !", Toast.LENGTH_SHORT).show()
+                        },
+                        {
+                            Toast.makeText(context, "Login Failed !", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }else {
+                    onFailure(Exception("Invalid Details !!!"))
+                }
+            },
             modifier = Modifier
                 .padding(top = 16.dp)
                 .width(144.dp)
@@ -226,6 +270,7 @@ fun SignIn(modifier: Modifier = Modifier, onClick: () -> Unit) {
 fun SignUp(
     onSuccess: (String, String, String, () -> Unit, (Exception) -> Unit) -> Unit,
     onFailure: (Exception) -> Unit,
+    navigate : () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -305,10 +350,11 @@ fun SignUp(
                         email,
                         pass1,
                         {
-                            Toast.makeText(context, "Sign Up Failed !!!", Toast.LENGTH_SHORT).show()
+                            navigate()
+                            Toast.makeText(context, "Sign Up Success !", Toast.LENGTH_SHORT).show()
                         },
                         {
-                            Toast.makeText(context, "Sign Up Failed !!!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Sign Up Failed !", Toast.LENGTH_SHORT).show()
                         }
                     )
                 } else {
