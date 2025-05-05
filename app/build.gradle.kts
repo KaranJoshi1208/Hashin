@@ -42,6 +42,9 @@ android {
 
 dependencies {
 
+    // Play services
+    implementation(libs.play.services.auth)
+
     //navigation
     implementation(libs.androidx.navigation.compose)
 

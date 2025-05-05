@@ -1,5 +1,6 @@
 package com.karan.hashin.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,6 +51,7 @@ import com.karan.hashin.navigation.Screens
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.utils.isValidEmail
 import com.karan.hashin.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun AuthScreen(
@@ -57,6 +60,7 @@ fun AuthScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val isNewUser = remember { mutableStateOf(true) }
 
     Box(
@@ -143,7 +147,17 @@ fun AuthScreen(
             }
 
             OutlinedButton(
-                onClick = { /* TODO(handle Google login) */ },
+                onClick = {
+                    scope.launch {
+                        val result = authViewModel.googleCredentialAuth(context)
+                        result.onSuccess { user ->
+                            navController.navigate(Screens.Home.name)
+                            Toast.makeText(context, "Google Auth Success !", Toast.LENGTH_SHORT).show()
+                        }.onFailure { e ->
+                            Log.e("Hashin", "Failed , cannot get the user... 😔", e)
+                        }
+                    }
+                },
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .align(Alignment.CenterHorizontally)

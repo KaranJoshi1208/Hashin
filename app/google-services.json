@@ -12,7 +12,20 @@
           "package_name": "com.karan.hashin"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1054238295659-1c74927ct24g7hnhci8q1avqgqgh1tvj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.karan.hashin",
+            "certificate_hash": "3cb2ec752bbbea31f5b8e16ddaa7b818b13e8a2d"
+          }
+        },
+        {
+          "client_id": "1054238295659-pl325m0625td0g2vcgm87gbrak9rs412.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBuEjoNzA6-AVQaJogrLOlXpaDLXwHff8s"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1054238295659-pl325m0625td0g2vcgm87gbrak9rs412.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
