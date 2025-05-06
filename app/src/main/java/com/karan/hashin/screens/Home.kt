@@ -3,7 +3,11 @@ package com.karan.hashin.screens
 import android.text.Layout
 import android.widget.GridLayout
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,11 +25,24 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
+            .navigationBarsPadding()
     ) {
-        Text(
-            text = "Home Screen",
-            fontSize = 60.sp,
-        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Row(
+
+            ) {
+
+            }
+        }
+//        Text(
+//            text = "Home Screen",
+//            fontSize = 60.sp,
+//        )
 
     }
 }
