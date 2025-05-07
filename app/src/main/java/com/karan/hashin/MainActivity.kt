@@ -1,6 +1,11 @@
 package com.karan.hashin
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.asPaddingValues
 import android.os.Bundle
+import android.util.Log
+//import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
@@ -35,14 +42,24 @@ class MainActivity : ComponentActivity() {
         setContent {
             HashinTheme {
                 navController = rememberNavController()
+                val authViewModel: AuthViewModel = viewModel()
+                val isAuthenticated = authViewModel.isAuthenticated.collectAsState().value
 
                 Scaffold(
                     topBar = {
-                        TopAppBar(Modifier)
+                        Log.d("#ined", "isAuthenticated ? $isAuthenticated")
+                        if (isAuthenticated) {
+                            TopAppBar(Modifier)
+                        }
                     },
                     bottomBar = {
-                        BottomAppBar(Modifier)
-                    }
+                        Log.d("#ined", "isAuthenticated ? $isAuthenticated")
+                        if (isAuthenticated) {
+                            BottomAppBar(Modifier)
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(WindowInsets.systemBars.asPaddingValues())
                 ) { pd ->
                     NavGraph(pd, navController)
                 }

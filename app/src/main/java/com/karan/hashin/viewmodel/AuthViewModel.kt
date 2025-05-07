@@ -4,12 +4,16 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class AuthViewModel : ViewModel() {
@@ -20,11 +24,20 @@ class AuthViewModel : ViewModel() {
     }
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val _isAuthenticated = MutableStateFlow(auth.currentUser != null)
+    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
 
+    init {
+        // Listen for auth state changes
+        auth.addAuthStateListener { firebaseAuth ->
+            _isAuthenticated.value = firebaseAuth.currentUser != null
+        }
+    }
 
     fun signIn(email: String, pass: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         auth.signInWithEmailAndPassword(email, pass)
             .addOnSuccessListener() {
+                _isAuthenticated.value = true
                 onSuccess()
             }
             .addOnFailureListener() {
@@ -49,6 +62,7 @@ class AuthViewModel : ViewModel() {
                 )
                     ?.addOnCompleteListener() { task ->
                         if (task.isSuccessful) {
+                            _isAuthenticated.value = true
                             onSuccess()
                         } else {
                             onFailure(
@@ -65,7 +79,6 @@ class AuthViewModel : ViewModel() {
     suspend fun googleCredentialAuth(
         context: Context,
     ): Result<FirebaseUser?> {
-
         return try {
             val cm = CredentialManager.create(context)
             val googleIdOption = GetGoogleIdOption.Builder()
@@ -79,15 +92,20 @@ class AuthViewModel : ViewModel() {
             )
             val credential = result.credential as? GoogleIdTokenCredential
             val idToken = credential?.idToken
-            if (idToken == null) return Result.failure(Exception("Google ID token is fucked 💀"))
+            if (idToken == null) return Result.failure(Exception("Google ID token is null"))
             val fbCredential = GoogleAuthProvider.getCredential(idToken, null)
             val authResult = FirebaseAuth.getInstance()
                 .signInWithCredential(fbCredential)
                 .await()
+            _isAuthenticated.value = true
             Result.success(authResult.user)
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
 
+    fun signOut() {
+        auth.signOut()
+        _isAuthenticated.value = false
     }
 }

@@ -1,6 +1,7 @@
 package com.karan.hashin.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,13 +25,14 @@ fun NavGraph(
         startDestination = Screens.Auth.name,          // start should be Splash
         modifier = Modifier
             .padding(innerPadding)
+            .navigationBarsPadding()
     ) {
 
         composable(
             route = Screens.Auth.name
         ) {
             val authViewModel : AuthViewModel = viewModel(it)
-            AuthScreen(authViewModel, navController, Modifier)
+            AuthScreen(authViewModel, navController, innerPadding, Modifier)
         }
 
         composable(

@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +30,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,11 +61,19 @@ import kotlinx.coroutines.launch
 fun AuthScreen(
     authViewModel: AuthViewModel,
     navController: NavController,
+    innerPadding : PaddingValues,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val isNewUser = remember { mutableStateOf(true) }
+    val authState = authViewModel.isAuthenticated.collectAsState().value
+
+
+    if(authState == true) {
+        Log.d("#ined", "really isAuthenticated ? ${authViewModel.isAuthenticated.value}")
+        navController.navigate(Screens.Home.name)
+    }
 
     Box(
         modifier = modifier
@@ -71,7 +82,6 @@ fun AuthScreen(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = 88.dp)
                 .fillMaxSize()
         ) {
             Text(
