@@ -85,9 +85,9 @@ fun Element(modifier: Modifier = Modifier) {
                     .background(Color.Red)
             ) {
                 Text(
-                    text = "N",
+                    text = "E",
                     color = Color.White,
-                    fontSize = 32.sp,
+                    fontSize = 36.sp,
                 )
             }
         }

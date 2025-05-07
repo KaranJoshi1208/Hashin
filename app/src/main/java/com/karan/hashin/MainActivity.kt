@@ -16,6 +16,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.karan.hashin.components.BottomAppBar
+import com.karan.hashin.components.TopAppBar
 import com.karan.hashin.navigation.NavGraph
 import com.karan.hashin.screens.AuthScreen
 import com.karan.hashin.ui.theme.HashinTheme
@@ -33,7 +35,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             HashinTheme {
                 navController = rememberNavController()
-                NavGraph(navController)
+
+                Scaffold(
+                    topBar = {
+                        TopAppBar(Modifier)
+                    },
+                    bottomBar = {
+                        BottomAppBar(Modifier)
+                    }
+                ) { pd ->
+                    NavGraph(pd, navController)
+                }
             }
         }
     }
