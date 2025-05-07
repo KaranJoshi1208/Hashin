@@ -1,10 +1,12 @@
 package com.karan.hashin.components
 
+import android.R.attr.contentDescription
 import com.karan.hashin.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,24 +42,30 @@ fun TopAppBar(modifier: Modifier = Modifier) {
         ),
         modifier = modifier
             .padding(bottom = 8.dp)
+            .fillMaxWidth()
+            .height(64.dp)
 
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
+                .fillMaxSize()
 
         ) {
-            Text(
-                text = "#",
-                fontWeight = FontWeight.Bold,
-                fontSize = 36.sp,
+            Image(
+                imageVector = ImageVector.vectorResource(id = R.drawable.hash),
+                contentDescription = "App icon",
                 modifier = Modifier
                     .padding(start = 16.dp)
             )
 
-            Spacer(Modifier.weight(1f))
+            Text(
+                text = "Vault",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.W300,
+                modifier = Modifier.weight(1f)
+            )
 
             Image(
                 imageVector = ImageVector.vectorResource(id = R.drawable.search),
@@ -69,7 +78,7 @@ fun TopAppBar(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = false)
 @Composable
 private fun BarPreview() {
     HashinTheme {
