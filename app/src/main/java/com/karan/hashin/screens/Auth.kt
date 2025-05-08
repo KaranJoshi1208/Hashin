@@ -30,7 +30,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +48,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.karan.hashin.navigation.Screens
 import com.karan.hashin.ui.theme.HashinTheme
@@ -71,8 +69,8 @@ fun AuthScreen(
 
 
     if(authState == true) {
-        Log.d("#ined", "really isAuthenticated ? ${authViewModel.isAuthenticated.value}")
-        navController.navigate(Screens.Home.name)
+        Log.d("#ined", "really isAuthenticated ? true")
+        navController.navigate(Screens.HomeGraph.Vault.route)
     }
 
     Box(
@@ -108,8 +106,8 @@ fun AuthScreen(
                         Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                     },
                     navigate = {
-                        navController.navigate(Screens.Home.name) {
-                            popUpTo(Screens.Auth.name) { inclusive = true }
+                        navController.navigate(Screens.HomeGraph.Vault.route) {
+                            popUpTo(Screens.Auth.route) { inclusive = true }
                             launchSingleTop = true
                         }
                     },
@@ -125,8 +123,8 @@ fun AuthScreen(
                         Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                     },
                     navigate = {
-                        navController.navigate(Screens.Home.name) {
-                            popUpTo(Screens.Auth.name) { inclusive = true }
+                        navController.navigate(Screens.HomeGraph.Vault.route) {
+                            popUpTo(Screens.Auth.route) { inclusive = true }
                             launchSingleTop = true
                         }
                     },
@@ -163,7 +161,7 @@ fun AuthScreen(
                     scope.launch {
                         val result = authViewModel.googleCredentialAuth(context)
                         result.onSuccess { user ->
-                            navController.navigate(Screens.Home.name)
+                            navController.navigate(Screens.HomeGraph.Vault.route)
                             Toast.makeText(context, "Google Auth Success !", Toast.LENGTH_SHORT).show()
                         }.onFailure { e ->
                             Log.e("Hashin", "Failed , cannot get the user... 😔", e)

@@ -1,8 +1,14 @@
 package com.karan.hashin.navigation
 
-sealed class Screens(val name : String) {
-    object Splash : Screens(name = "splash")
-    object Auth : Screens(name = "auth")
-    object Home : Screens(name = "home")
+sealed class Screens(open val route : String) {
+    object Splash : Screens(route = "splash")
+    object Auth : Screens(route = "auth")
 
+    object Home : Screens(route = "home")
+
+    sealed class HomeGraph(override val route : String) : Screens(route) {
+        object Vault : HomeGraph(route = "home/vault")
+        object Passkey : HomeGraph(route = "home/add")
+        object Setting : HomeGraph(route = "home/settings")
+    }
 }
