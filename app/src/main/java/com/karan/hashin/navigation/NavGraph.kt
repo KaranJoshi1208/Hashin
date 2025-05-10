@@ -14,6 +14,7 @@ import com.karan.hashin.screens.AuthScreen
 import com.karan.hashin.screens.HomeScreen
 import com.karan.hashin.screens.Splash
 import com.karan.hashin.viewmodel.AuthViewModel
+import com.karan.hashin.viewmodel.SplashViewModel
 
 
 @Composable
@@ -33,7 +34,8 @@ fun NavGraph(
         composable(
             route = Screens.Splash.route
         ) {
-            Splash(Modifier)
+            val vm : SplashViewModel = viewModel(it)
+            Splash(vm, navController, Modifier)
         }
 
         composable(

@@ -18,14 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.karan.hashin.ui.theme.HashinTheme
-
+import androidx.navigation.NavHostController
+import com.karan.hashin.viewmodel.SplashViewModel
 
 @Composable
-fun Splash(modifier: Modifier = Modifier) {
-
+fun Splash(
+    viewModel : SplashViewModel,
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
     var animate by remember { mutableStateOf(false) }
 
     val scale by animateFloatAsState(
@@ -45,6 +47,9 @@ fun Splash(modifier: Modifier = Modifier) {
 
     LaunchedEffect(key1 = true) {
         animate = true
+//        viewModel.move {
+//            navController.navigate(viewModel.to)
+//        }
     }
 
     Box(
@@ -64,13 +69,4 @@ fun Splash(modifier: Modifier = Modifier) {
                 )
         )
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun SplashPreview() {
-    HashinTheme {
-        Splash(Modifier)
-    }
-    
 }
