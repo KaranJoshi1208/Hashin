@@ -59,7 +59,6 @@ import kotlinx.coroutines.launch
 fun AuthScreen(
     authViewModel: AuthViewModel,
     navController: NavController,
-    innerPadding : PaddingValues,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current

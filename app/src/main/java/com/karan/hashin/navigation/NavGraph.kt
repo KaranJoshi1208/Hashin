@@ -19,7 +19,7 @@ import com.karan.hashin.viewmodel.SplashViewModel
 
 @Composable
 fun NavGraph(
-    innerPadding : PaddingValues,
+//    innerPadding : PaddingValues,
     navController: NavHostController,
 ) {
 
@@ -27,7 +27,7 @@ fun NavGraph(
         navController = navController,
         startDestination = Screens.Splash.route,          // start should be Splash
         modifier = Modifier
-            .padding(innerPadding)
+//            .padding(innerPadding)
             .navigationBarsPadding()
     ) {
 
@@ -42,7 +42,7 @@ fun NavGraph(
             route = Screens.Auth.route
         ) {
             val authViewModel : AuthViewModel = viewModel(it)
-            AuthScreen(authViewModel, navController, innerPadding, Modifier)
+            AuthScreen(authViewModel, navController, Modifier)
         }
 
         navigation(

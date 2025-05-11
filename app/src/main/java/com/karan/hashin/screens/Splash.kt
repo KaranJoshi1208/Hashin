@@ -29,6 +29,9 @@ fun Splash(
     modifier: Modifier = Modifier
 ) {
     var animate by remember { mutableStateOf(false) }
+    viewModel.move {
+        navController.navigate(viewModel.to)
+    }
 
     val scale by animateFloatAsState(
         targetValue = if(animate) 1f else 0f,
