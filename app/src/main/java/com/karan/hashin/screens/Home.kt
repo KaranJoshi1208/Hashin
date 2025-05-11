@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,18 +27,20 @@ import com.karan.hashin.ui.theme.HashinTheme
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
 
-    Vault(Modifier)
 
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(Modifier)
-//        },
-//        bottomBar = {
-//            BottomAppBar(Modifier)
-//        }
-//    ) { pd ->
-//
-//    }
+    Scaffold(
+        topBar = {
+            TopAppBar(Modifier)
+        },
+        bottomBar = {
+            BottomAppBar(Modifier)
+        },
+        modifier = Modifier
+            .navigationBarsPadding()
+            .statusBarsPadding()
+    ) { pd ->
+        Vault(pd, Modifier)
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
