@@ -12,7 +12,7 @@ class SplashViewModel : ViewModel() {
     var auth : FirebaseAuth = FirebaseAuth.getInstance()
 
     init {
-        to = if (auth.currentUser != null) Screens.HomeGraph.Vault.route else Screens.Auth.route
+        to = if (auth.currentUser != null) Screens.Home.route else Screens.Auth.route
     }
 
     fun move(action : () -> Unit) = viewModelScope.launch {

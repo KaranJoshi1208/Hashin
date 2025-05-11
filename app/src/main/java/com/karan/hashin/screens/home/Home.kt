@@ -1,0 +1,76 @@
+package com.karan.hashin.screens.home
+
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.karan.hashin.components.BottomAppBar
+import com.karan.hashin.components.TopAppBar
+import com.karan.hashin.navigation.Screens
+import com.karan.hashin.navigation.getViewModel
+import com.karan.hashin.ui.theme.HashinTheme
+import com.karan.hashin.viewmodel.HomeViewModel
+
+
+@Composable
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    val innerNav = rememberNavController()
+    Scaffold(
+        topBar = {
+            TopAppBar(Modifier)
+        },
+        bottomBar = {
+            BottomAppBar(Modifier)
+        },
+        modifier = Modifier
+            .navigationBarsPadding()
+            .statusBarsPadding()
+    ) { pd ->
+        NavHost(
+            navController = innerNav,
+            startDestination = Screens.HomeGraph.Vault.route,
+            modifier = Modifier
+                .padding(pd)
+        ) {
+            composable(
+                route = Screens.HomeGraph.Vault.route
+            ) {
+                val vm : HomeViewModel = it.getViewModel(navController)
+                Vault()
+            }
+
+            composable(
+                route = Screens.HomeGraph.Passkey.route
+            ) {
+                val vm : HomeViewModel = it.getViewModel(navController)
+                Passkey()
+            }
+
+            composable(
+                route = Screens.HomeGraph.Setting.route
+            ) {
+                val vm : HomeViewModel = it.getViewModel(navController)
+                Settings()
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun HomePreview() {
+    HashinTheme {
+//        HomeScreen()
+    }
+}

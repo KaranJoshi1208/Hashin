@@ -1,4 +1,4 @@
-package com.karan.hashin.screens
+package com.karan.hashin.screens.splash
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
