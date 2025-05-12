@@ -26,6 +26,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val innerNav = rememberNavController()
+
     Scaffold(
         topBar = {
             TopAppBar(Modifier)
@@ -46,22 +47,19 @@ fun HomeScreen(
             composable(
                 route = Screens.HomeGraph.Vault.route
             ) {
-                val vm : HomeViewModel = it.getViewModel(navController)
-                Vault()
+                Vault(viewModel)
             }
 
             composable(
                 route = Screens.HomeGraph.Passkey.route
             ) {
-                val vm : HomeViewModel = it.getViewModel(navController)
-                Passkey()
+                Passkey(viewModel)
             }
 
             composable(
                 route = Screens.HomeGraph.Setting.route
             ) {
-                val vm : HomeViewModel = it.getViewModel(navController)
-                Settings()
+                Settings(viewModel)
             }
         }
     }

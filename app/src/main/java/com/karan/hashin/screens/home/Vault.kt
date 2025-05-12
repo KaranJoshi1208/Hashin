@@ -8,9 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.karan.hashin.components.Element
+import com.karan.hashin.viewmodel.HomeViewModel
 
 @Composable
 fun Vault(
+    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
     Box(

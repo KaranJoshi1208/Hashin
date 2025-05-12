@@ -44,23 +44,25 @@ fun NavGraph(
             AuthScreen(authViewModel, navController, Modifier)
         }
 
-        navigation(
-            startDestination = Screens.HomeGraph.Vault.route,
+        composable(
             route = Screens.Home.route
         ) {
-            composable(
-                route = Screens.HomeGraph.Vault.route
-            ) {
-                val vm : HomeViewModel = it.getViewModel(navController)
-                HomeScreen(vm, navController, Modifier)
-            }
+            val vm : HomeViewModel = viewModel(it)
+            HomeScreen(vm, navController, Modifier)
         }
+
+//        navigation(
+//            startDestination = Screens.HomeGraph.Vault.route,
+//            route = Screens.Home.route
+//        ) {
+//
+//        }
     }
 }
 
 @Composable
 inline fun <reified T : ViewModel> NavBackStackEntry.getViewModel(navController: NavController) : T {
-    val parentRoute = destination.parent?.route ?: viewModel<T>()
+    val parentRoute = destination.parent?.route ?: return viewModel<T>()
     val backStack = remember(this) {
         navController.getBackStackEntry(parentRoute)
     }
