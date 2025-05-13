@@ -16,7 +16,7 @@ class SplashViewModel : ViewModel() {
     }
 
     fun move(action : () -> Unit) = viewModelScope.launch {
-        delay(5000)
+        delay(3500)
         action()
     }
 }

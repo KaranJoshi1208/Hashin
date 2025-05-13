@@ -23,6 +23,7 @@ class AuthViewModel : ViewModel() {
             "1054238295659-pl325m0625td0g2vcgm87gbrak9rs412.apps.googleusercontent.com"
     }
 
+
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val _isAuthenticated = MutableStateFlow(auth.currentUser != null)
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
