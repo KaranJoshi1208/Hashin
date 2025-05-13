@@ -4,16 +4,16 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
+import com.karan.hashin.repos.AuthRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class AuthViewModel : ViewModel() {
@@ -24,12 +24,12 @@ class AuthViewModel : ViewModel() {
     }
 
 
+    private val authRepo : AuthRepo = AuthRepo()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val _isAuthenticated = MutableStateFlow(auth.currentUser != null)
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
 
     init {
-        // Listen for auth state changes
         auth.addAuthStateListener { firebaseAuth ->
             _isAuthenticated.value = firebaseAuth.currentUser != null
         }
@@ -55,22 +55,25 @@ class AuthViewModel : ViewModel() {
     ) {
         auth.createUserWithEmailAndPassword(email, pass)
             .addOnSuccessListener {
-                it.user?.updateProfile(
-                    UserProfileChangeRequest
-                        .Builder()
-                        .setDisplayName(userName)
-                        .build()
-                )
-                    ?.addOnCompleteListener() { task ->
-                        if (task.isSuccessful) {
-                            _isAuthenticated.value = true
-                            onSuccess()
-                        } else {
-                            onFailure(
-                                task.exception ?: Exception("Unknown error during profile update")
-                            )
+                it.user?.apply {
+                    updateProfile(
+                        UserProfileChangeRequest
+                            .Builder()
+                            .setDisplayName(userName)
+                            .build()
+                    )
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                _isAuthenticated.value = true
+                                authRepo.createUserCollection(this@apply)
+                                onSuccess()
+                            } else {
+                                onFailure(
+                                    task.exception ?: Exception("Unknown error during profile update")
+                                )
+                            }
                         }
-                    }
+                }
             }
             .addOnFailureListener {
                 onFailure(it)
@@ -99,6 +102,17 @@ class AuthViewModel : ViewModel() {
                 .signInWithCredential(fbCredential)
                 .await()
             _isAuthenticated.value = true
+
+            authResult.user?.let { user ->
+                val userDocRef = FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(user.uid)
+
+                val docSnapshot = userDocRef.get().await()
+                if (!docSnapshot.exists()) {
+                    authRepo.createUserCollection(user)
+                }
+            } ?: return Result.failure(Exception("Authenticated user is null"))
             Result.success(authResult.user)
         } catch (e: Exception) {
             Result.failure(e)

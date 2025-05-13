@@ -68,7 +68,7 @@ fun AuthScreen(
 
     if(authState == true) {
         Log.d("#ined", "really isAuthenticated ? true")
-        navController.navigate(Screens.HomeGraph.Vault.route)
+        navController.navigate(Screens.Home.route)
     }
 
     Box(

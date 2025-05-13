@@ -1,5 +1,6 @@
 package com.karan.hashin.repos
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -20,8 +21,13 @@ class AuthRepo {
     fun createUserCollection(user: FirebaseUser) {
 
         val data = mapOf(
+            UID to user.uid,
+            EMAIL to user.email,
+            NAME to user.displayName
         )
-
-        db.collection(DB_COLLECTION).document(user.uid)
+        db.collection(DB_COLLECTION).document(user.uid).set(data)
+            .addOnFailureListener {
+                Log.e("#ined", "Cannot create user document in 'users' collection", it)
+            }
     }
 }
