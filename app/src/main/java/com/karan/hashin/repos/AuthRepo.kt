@@ -8,7 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class AuthRepo {
 
     companion object {
-        private const val DB_COLLECTION: String = "user"
+        private const val DB_COLLECTION: String = "users"
         private const val VAULT_COLLECTION: String = "vault"
         private const val NAME: String = "name"
         private const val EMAIL: String = "email"
@@ -20,14 +20,18 @@ class AuthRepo {
 
     fun createUserCollection(user: FirebaseUser) {
 
+        Log.d("#ined", "Creating user UID document.....")
         val data = mapOf(
             UID to user.uid,
             EMAIL to user.email,
             NAME to user.displayName
         )
         db.collection(DB_COLLECTION).document(user.uid).set(data)
+            .addOnSuccessListener {
+                Log.d("#ined", "Successfully created UID doc ✔️")
+            }
             .addOnFailureListener {
-                Log.e("#ined", "Cannot create user document in 'users' collection", it)
+                Log.e("#ined", "Cannot create user document in 'users' collection ❌", it)
             }
     }
 }

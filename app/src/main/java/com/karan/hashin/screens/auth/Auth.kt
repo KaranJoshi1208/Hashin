@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,6 +30,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,17 +65,11 @@ fun AuthScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val isNewUser = remember { mutableStateOf(true) }
-    val authState = authViewModel.isAuthenticated.collectAsState().value
-
-
-    if(authState == true) {
-        Log.d("#ined", "really isAuthenticated ? true")
-        navController.navigate(Screens.Home.route)
-    }
 
     Box(
         modifier = modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .navigationBarsPadding()
     ) {
         Column(
@@ -417,13 +413,5 @@ fun SignUp(
                     }
             )
         }
-    }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-private fun AuthPreview() {
-    HashinTheme {
-//        AuthScreen(viewModel<AuthViewModel>())
     }
 }

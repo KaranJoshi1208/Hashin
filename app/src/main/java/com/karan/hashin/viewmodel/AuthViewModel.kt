@@ -1,6 +1,7 @@
 package com.karan.hashin.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.ViewModel
@@ -26,19 +27,10 @@ class AuthViewModel : ViewModel() {
 
     private val authRepo : AuthRepo = AuthRepo()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val _isAuthenticated = MutableStateFlow(auth.currentUser != null)
-    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
-
-    init {
-        auth.addAuthStateListener { firebaseAuth ->
-            _isAuthenticated.value = firebaseAuth.currentUser != null
-        }
-    }
 
     fun signIn(email: String, pass: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         auth.signInWithEmailAndPassword(email, pass)
             .addOnSuccessListener() {
-                _isAuthenticated.value = true
                 onSuccess()
             }
             .addOnFailureListener() {
@@ -64,7 +56,7 @@ class AuthViewModel : ViewModel() {
                     )
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                _isAuthenticated.value = true
+                                Log.d("#ined", "UID: ${FirebaseAuth.getInstance().currentUser?.uid}, task user uid -> ${this@apply.uid}")
                                 authRepo.createUserCollection(this@apply)
                                 onSuccess()
                             } else {
@@ -101,7 +93,6 @@ class AuthViewModel : ViewModel() {
             val authResult = FirebaseAuth.getInstance()
                 .signInWithCredential(fbCredential)
                 .await()
-            _isAuthenticated.value = true
 
             authResult.user?.let { user ->
                 val userDocRef = FirebaseFirestore.getInstance()
@@ -117,10 +108,5 @@ class AuthViewModel : ViewModel() {
         } catch (e: Exception) {
             Result.failure(e)
         }
-    }
-
-    fun signOut() {
-        auth.signOut()
-        _isAuthenticated.value = false
     }
 }

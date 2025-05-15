@@ -32,27 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             HashinTheme {
                 navController = rememberNavController()
-                val authViewModel: AuthViewModel = viewModel()
-                val isAuthenticated = authViewModel.isAuthenticated.collectAsState().value
-
-//                Scaffold(
-//                    topBar = {
-//                        Log.d("#ined", "isAuthenticated ? $isAuthenticated")
-//                        if (isAuthenticated) {
-//                            TopAppBar(Modifier)
-//                        }
-//                    },
-//                    bottomBar = {
-//                        Log.d("#ined", "isAuthenticated ? $isAuthenticated")
-//                        if (isAuthenticated) {
-//                            BottomAppBar(Modifier)
-//                        }
-//                    },
-//                    modifier = Modifier
-//                        .padding(WindowInsets.systemBars.asPaddingValues())
-//                ) { pd ->
-                    NavGraph(navController)
-//                }
+                NavGraph(navController)
             }
         }
     }

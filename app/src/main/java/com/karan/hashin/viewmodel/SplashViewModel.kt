@@ -8,12 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SplashViewModel : ViewModel() {
-    var to : String
     var auth : FirebaseAuth = FirebaseAuth.getInstance()
-
-    init {
-        to = if (auth.currentUser != null) Screens.Home.route else Screens.Auth.route
-    }
 
     fun move(action : () -> Unit) = viewModelScope.launch {
         delay(3500)

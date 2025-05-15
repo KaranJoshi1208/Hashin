@@ -1,5 +1,6 @@
 package com.karan.hashin.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -10,7 +11,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import com.karan.hashin.screens.auth.AuthScreen
 import com.karan.hashin.screens.home.HomeScreen
 import com.karan.hashin.screens.splash.Splash
@@ -50,13 +50,6 @@ fun NavGraph(
             val vm : HomeViewModel = viewModel(it)
             HomeScreen(vm, navController, Modifier)
         }
-
-//        navigation(
-//            startDestination = Screens.HomeGraph.Vault.route,
-//            route = Screens.Home.route
-//        ) {
-//
-//        }
     }
 }
 

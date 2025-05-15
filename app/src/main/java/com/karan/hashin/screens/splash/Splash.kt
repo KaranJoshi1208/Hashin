@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.karan.hashin.navigation.Screens
 import com.karan.hashin.viewmodel.SplashViewModel
 
 @Composable
@@ -29,8 +30,9 @@ fun Splash(
     modifier: Modifier = Modifier
 ) {
     var animate by remember { mutableStateOf(false) }
+
     viewModel.move {
-        navController.navigate(viewModel.to)
+        navController.navigate(if (viewModel.auth.currentUser != null) Screens.Home.route else Screens.Auth.route)
     }
 
     val scale by animateFloatAsState(
@@ -50,9 +52,6 @@ fun Splash(
 
     LaunchedEffect(key1 = true) {
         animate = true
-//        viewModel.move {
-//            navController.navigate(viewModel.to)
-//        }
     }
 
     Box(
