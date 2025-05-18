@@ -201,7 +201,7 @@ fun LabelSelector(
     modifier: Modifier = Modifier,
     onLabelSelected: (String) -> Unit
 ) {
-    var selectedIndex by remember { mutableStateOf(0) }
+    var selectedIndex by remember { mutableIntStateOf(0) }
     val scope = rememberCoroutineScope()
     val animatedProgress = remember { Animatable(0f) }
 
