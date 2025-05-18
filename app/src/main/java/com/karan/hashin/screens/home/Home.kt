@@ -14,7 +14,6 @@ import androidx.navigation.compose.rememberNavController
 import com.karan.hashin.components.BottomAppBar
 import com.karan.hashin.components.TopAppBar
 import com.karan.hashin.navigation.Screens
-import com.karan.hashin.navigation.getViewModel
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.viewmodel.HomeViewModel
 
