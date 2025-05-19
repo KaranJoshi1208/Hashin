@@ -58,7 +58,7 @@ fun Passkey(
             .background(Color(0xFFF5F5F5))
             .padding(16.dp)
     ) {
-        // Header
+
         Text(
             text = "Add New Passkey",
             style = MaterialTheme.typography.headlineMedium,
@@ -74,7 +74,6 @@ fun Passkey(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Main Content
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = Color.White,
@@ -129,7 +128,6 @@ fun Passkey(
             }
         }
 
-        // Description Card
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
@@ -166,7 +164,6 @@ fun Passkey(
             )
         }
 
-        // Label Selector
         LabelSelector(
             listOf("Personal", "Work", "Business", "Social", "Other")
         ) {
@@ -209,8 +206,8 @@ fun LabelSelector(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 4.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp)
     ) {
         itemsIndexed(labels) { index, label ->
             val isSelected = index == selectedIndex
@@ -231,7 +228,7 @@ fun LabelSelector(
 
             Card(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
+                    .size(width = 144.dp, height = 72.dp)
                     .clickable {
                         selectedIndex = index
                         onLabelSelected(label)
