@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -50,6 +51,13 @@ dependencies {
 
     // FireStore
     implementation(libs.firebase.firestore.ktx)
+
+    // Icons-extended
+    implementation(libs.androidx.material.icons.extended)
+
+    // Room db
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
