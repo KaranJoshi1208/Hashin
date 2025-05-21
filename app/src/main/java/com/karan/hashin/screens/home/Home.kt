@@ -1,11 +1,17 @@
 package com.karan.hashin.screens.home
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -26,6 +32,15 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val innerNav = rememberNavController()
+//    val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+//    var isExiting = remember { mutableStateOf(false) }
+//
+//    BackHandler {
+//        if (!isExiting.value) {
+//            isExiting.value = true
+//            dispatcher?.onBackPressed()
+//        }
+//    }
 
     Scaffold(
         topBar = {
@@ -38,9 +53,32 @@ fun HomeScreen(
         },
         bottomBar = {
             BottomAppBar(
-                toVault = { innerNav.navigate(Screens.HomeGraph.Vault.route) },
-                toPassKey = { innerNav.navigate(Screens.HomeGraph.Passkey.route) },
-                toSetting = { innerNav.navigate(Screens.HomeGraph.Setting.route) },
+                toVault = {
+                    innerNav.navigate(Screens.HomeGraph.Vault.route) {
+                        popUpTo(0) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                },
+                toPassKey = {
+                    innerNav.navigate(Screens.HomeGraph.Passkey.route)
+                    {
+                        popUpTo(0) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                },
+                toSetting = {
+                    innerNav.navigate(Screens.HomeGraph.Setting.route)
+                    {
+                        popUpTo(0) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                },
                 modifier = Modifier
             )
         },
