@@ -32,15 +32,6 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val innerNav = rememberNavController()
-//    val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-//    var isExiting = remember { mutableStateOf(false) }
-//
-//    BackHandler {
-//        if (!isExiting.value) {
-//            isExiting.value = true
-//            dispatcher?.onBackPressed()
-//        }
-//    }
 
     Scaffold(
         topBar = {

@@ -20,7 +20,6 @@ class AuthRepo {
     private val db = FirebaseFirestore.getInstance()
 
     fun createUserCollection(user: FirebaseUser) {
-
         Log.d("#ined", "Creating user UID document.....")
         val data = mapOf(
             NAME to user.displayName,
@@ -33,9 +32,10 @@ class AuthRepo {
                 Log.d("#ined", "Successfully created UID doc ✔️")
 
                 // Creation of sub-collection "vault"
-                db.collection(DB_COLLECTION)
-                    .document(user.uid)
-                    .collection(VAULT_COLLECTION)
+                // FireStore won't create a sub-collection unless a document is added
+//                db.collection(DB_COLLECTION)
+//                    .document(user.uid)
+//                    .collection(VAULT_COLLECTION)
             }
             .addOnFailureListener {
                 Log.e("#ined", "Cannot create user document in 'users' collection ❌", it)

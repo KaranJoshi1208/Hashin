@@ -244,7 +244,7 @@ fun LabelSelector(
                     }
                     .scale(scale.value),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isSelected) Color(0xFF6200EE) else Color(0xFFF0F0F0)
+                    containerColor = if (isSelected) Color(0xFF9C27B0) else Color(0xFFF0F0F0)
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = elevation.value
