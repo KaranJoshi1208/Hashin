@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import com.karan.hashin.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -27,7 +28,12 @@ import androidx.compose.ui.unit.dp
 import com.karan.hashin.ui.theme.HashinTheme
 
 @Composable
-fun BottomAppBar(modifier: Modifier = Modifier) {
+fun BottomAppBar(
+    toVault: () -> Unit = {},
+    toPassKey: () -> Unit = {},
+    toSetting: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
 
     Card(
         shape = RectangleShape,
@@ -54,29 +60,38 @@ fun BottomAppBar(modifier: Modifier = Modifier) {
                 contentDescription = "Vault",
                 modifier = Modifier
                     .padding(start = 32.dp)
+                    .clickable(true) {
+                        toVault()
+                    }
             )
 
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(RoundedCornerShape(100))
-                    .background(Color.Green.copy(alpha = 0.5f))
+                    .clip(RoundedCornerShape(percent = 33))
+                    .background(Color(0xFF9C27B0))
             ) {
                 Image(
                     imageVector = ImageVector.vectorResource(id = R.drawable.add),
-                    contentDescription = "Vault",
+                    contentDescription = "PassKey",
                     modifier = Modifier
                         .size(40.dp)
+                        .clickable(true) {
+                            toPassKey()
+                        }
                         
                 )
             }
 
             Image(
                 imageVector = ImageVector.vectorResource(id = R.drawable.settings),
-                contentDescription = "Vault",
+                contentDescription = "Settings",
                 modifier = Modifier
                     .padding(end = 32.dp)
+                    .clickable(true) {
+                        toSetting()
+                    }
             )
 
         }
