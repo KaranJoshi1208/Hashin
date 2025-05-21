@@ -155,7 +155,10 @@ fun AuthScreen(
                     scope.launch {
                         val result = authViewModel.googleCredentialAuth(context)
                         result.onSuccess { user ->
-                            navController.navigate(Screens.Home.route)
+                            navController.navigate(Screens.Home.route) {
+                                popUpTo(Screens.Auth.route) { inclusive = true }
+                                launchSingleTop = true
+                            }
                             Toast.makeText(context, "Google Auth Success !", Toast.LENGTH_SHORT).show()
                         }.onFailure { e ->
                             Log.e("Hashin", "Failed , cannot get the user... 😔", e)

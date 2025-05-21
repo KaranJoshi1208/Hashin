@@ -32,7 +32,12 @@ fun Splash(
     var animate by remember { mutableStateOf(false) }
 
     viewModel.move {
-        navController.navigate(if (viewModel.auth.currentUser != null) Screens.Home.route else Screens.Auth.route)
+        navController.navigate(if (viewModel.auth.currentUser != null) Screens.Home.route else Screens.Auth.route) {
+            popUpTo(Screens.Splash.route) {
+                inclusive = true
+            }
+            launchSingleTop = true
+        }
     }
 
     val scale by animateFloatAsState(
