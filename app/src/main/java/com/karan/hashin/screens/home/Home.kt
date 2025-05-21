@@ -7,6 +7,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,10 +29,20 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(Modifier)
+            TopAppBar(
+                onSearch = {
+                    innerNav.navigate(Screens.HomeGraph.Search.route)
+                },
+                modifier = Modifier
+            )
         },
         bottomBar = {
-            BottomAppBar(Modifier)
+            BottomAppBar(
+                toVault = { innerNav.navigate(Screens.HomeGraph.Vault.route) },
+                toPassKey = { innerNav.navigate(Screens.HomeGraph.Passkey.route) },
+                toSetting = { innerNav.navigate(Screens.HomeGraph.Setting.route) },
+                modifier = Modifier
+            )
         },
         modifier = Modifier
             .navigationBarsPadding()
@@ -60,6 +71,12 @@ fun HomeScreen(
             ) {
                 Settings(viewModel)
             }
+
+            composable(
+                route = Screens.HomeGraph.Search.route
+            ) {
+                Search(viewModel)
+            }
         }
     }
 }
@@ -68,6 +85,6 @@ fun HomeScreen(
 @Composable
 private fun HomePreview() {
     HashinTheme {
-//        HomeScreen()
+        HomeScreen(viewModel<HomeViewModel>(), rememberNavController())
     }
 }

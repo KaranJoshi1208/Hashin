@@ -4,6 +4,7 @@ import android.R.attr.contentDescription
 import com.karan.hashin.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +31,10 @@ import androidx.compose.ui.unit.sp
 import com.karan.hashin.ui.theme.HashinTheme
 
 @Composable
-fun TopAppBar(modifier: Modifier = Modifier) {
+fun TopAppBar(
+    onSearch: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
 
     Card(
         shape = RectangleShape,
@@ -57,13 +61,13 @@ fun TopAppBar(modifier: Modifier = Modifier) {
                 contentDescription = "App icon",
                 modifier = Modifier
                     .padding(start = 16.dp)
+                    .size(32.dp)
             )
 
             Text(
                 text = "Vault",
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.W300,
                 modifier = Modifier.weight(1f)
             )
 
@@ -72,7 +76,10 @@ fun TopAppBar(modifier: Modifier = Modifier) {
                 contentDescription = "Search for passkeys",
                 modifier = Modifier
                     .padding(end = 16.dp)
-                    .size(32.dp)
+                    .size(28.dp)
+                    .clickable(true) {
+                        onSearch()
+                    }
             )
         }
     }
