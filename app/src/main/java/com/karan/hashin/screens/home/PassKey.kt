@@ -49,6 +49,7 @@ fun Passkey(
     var userName by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
+    var label by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     Column(
@@ -65,7 +66,7 @@ fun Passkey(
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1A1A1A)
         )
-        
+
         Text(
             text = "Store your credentials securely",
             style = MaterialTheme.typography.bodyMedium,
@@ -107,7 +108,8 @@ fun Passkey(
                     label = { Text("Password") },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                     trailingIcon = {
-                        val image = if (isPasswordVisible) R.drawable.visibility else R.drawable.visibility_off
+                        val image =
+                            if (isPasswordVisible) R.drawable.visibility else R.drawable.visibility_off
 
                         Icon(
                             painter = painterResource(id = image),
@@ -167,14 +169,22 @@ fun Passkey(
         LabelSelector(
             listOf("Personal", "Work", "Business", "Social", "Other")
         ) {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            label = it
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
         // Save Button
         Button(
-            onClick = { /* TODO: Handle save */ },
+            onClick = {
+                viewModel.addPassKey(userName, pass, desc, label)
+                // reset input fields
+                userName = ""
+                pass = ""
+                desc = ""
+                label = ""
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -219,7 +229,7 @@ fun LabelSelector(
                 ),
                 label = "scale"
             )
-            
+
             val elevation = animateDpAsState(
                 targetValue = if (isSelected) 8.dp else 2.dp,
                 animationSpec = tween(durationMillis = 200),

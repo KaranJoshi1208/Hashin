@@ -7,5 +7,6 @@ import androidx.room.Entity
 data class PassKey(
     val userName: String,
     val pass: String,
-    val desc: String
+    val desc: String,
+    val label: String
 )

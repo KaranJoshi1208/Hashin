@@ -17,7 +17,7 @@ class FireStoreDB {
 
     private val db = FirebaseFirestore.getInstance()
 
-    fun addPasskey(user: FirebaseUser, passKey: PassKey) {
+    fun addPasskeyToVault(user: FirebaseUser, passKey: PassKey) {
         db.collection(DB_COLLECTION)
             .document(user.uid)
             .collection(VAULT_COLLECTION)
