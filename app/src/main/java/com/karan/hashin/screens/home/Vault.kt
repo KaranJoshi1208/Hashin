@@ -20,6 +20,7 @@ fun Vault(
     modifier: Modifier = Modifier
 ) {
 
+    var data = viewModel.passkeys
     val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     var isExiting = remember { mutableStateOf(false) }
 
@@ -41,10 +42,8 @@ fun Vault(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            val data = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
-
-            items(count = data.size, key = { it }) {
-                Element()
+            items(count = data.size, key = { it }) {i ->
+                Element(data[i])
             }
         }
     }

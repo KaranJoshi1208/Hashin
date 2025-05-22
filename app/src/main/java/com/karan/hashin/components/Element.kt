@@ -25,10 +25,14 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.ui.theme.HashinTheme
 
 @Composable
-fun Element(modifier: Modifier = Modifier) {
+fun Element(
+    passKey: PassKey,
+    modifier: Modifier = Modifier
+) {
 
     Card(
         colors = CardDefaults.cardColors(
@@ -67,7 +71,7 @@ fun Element(modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = "Bolt",
+                    text = passKey.userName,
                     fontSize = 14.sp,
                     modifier = Modifier
                         .padding(start = 4.dp)
@@ -85,7 +89,7 @@ fun Element(modifier: Modifier = Modifier) {
                     .background(Color.Red)
             ) {
                 Text(
-                    text = "E",
+                    text = passKey.label.first().uppercase(),
                     color = Color.White,
                     fontSize = 36.sp,
                 )
@@ -98,6 +102,6 @@ fun Element(modifier: Modifier = Modifier) {
 @Composable
 private fun PreviewElement() {
     HashinTheme {
-        Element(Modifier.padding(top = 144.dp))
+        Element(PassKey("", "", "", ""), Modifier.padding(top = 144.dp))
     }
 }

@@ -13,6 +13,8 @@ class HomeRepo {
         fire.addPasskeyToVault(user, passKey)
     }
 
-
+    suspend fun getPassKey(user : FirebaseUser): List<PassKey> {
+        return fire.getPassKey(user)
+    }
 
 }

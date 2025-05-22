@@ -30,12 +30,6 @@ class AuthRepo {
         db.collection(DB_COLLECTION).document(user.uid).set(data)
             .addOnSuccessListener {
                 Log.d("#ined", "Successfully created UID doc ✔️")
-
-                // Creation of sub-collection "vault"
-                // FireStore won't create a sub-collection unless a document is added
-//                db.collection(DB_COLLECTION)
-//                    .document(user.uid)
-//                    .collection(VAULT_COLLECTION)
             }
             .addOnFailureListener {
                 Log.e("#ined", "Cannot create user document in 'users' collection ❌", it)
