@@ -89,7 +89,7 @@ fun Element(
                     .background(Color.Red)
             ) {
                 Text(
-                    text = passKey.label.first().uppercase(),
+                    text = passKey.label.firstOrNull()?.uppercase() ?: "",
                     color = Color.White,
                     fontSize = 36.sp,
                 )

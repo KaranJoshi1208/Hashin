@@ -1,5 +1,6 @@
 package com.karan.hashin.screens.home
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,9 @@ fun Vault(
     modifier: Modifier = Modifier
 ) {
 
-    var data = viewModel.passkeys
+    var data = viewModel.passkeys.also {
+        Log.d("#ined", it.toString())
+    }
     val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     var isExiting = remember { mutableStateOf(false) }
 
