@@ -46,7 +46,9 @@ fun Vault(
                 .fillMaxWidth()
         ) {
             items(count = data.size, key = { it }) {i ->
-                Element(data[i])
+                Element(data[i]) {
+//                    TODO("Define Card onClick")
+                }
             }
         }
     }

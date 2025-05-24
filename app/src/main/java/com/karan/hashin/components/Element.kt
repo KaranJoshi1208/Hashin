@@ -3,11 +3,11 @@ package com.karan.hashin.components
 import com.karan.hashin.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,7 +31,8 @@ import com.karan.hashin.ui.theme.HashinTheme
 @Composable
 fun Element(
     passKey: PassKey,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
 
     Card(
@@ -46,6 +47,7 @@ fun Element(
             .height(88.dp)
             .padding(horizontal = 16.dp)
             .padding(top = 8.dp, bottom = 8.dp)
+            .clickable(true) { onClick() }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -102,6 +104,6 @@ fun Element(
 @Composable
 private fun PreviewElement() {
     HashinTheme {
-        Element(PassKey("", "", "", ""), Modifier.padding(top = 144.dp))
+        Element(PassKey("", "", "", ""), Modifier.padding(top = 144.dp)) {}
     }
 }
