@@ -9,9 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.karan.hashin.components.BottomAppBar
 import com.karan.hashin.navigation.Screens
 import com.karan.hashin.ui.theme.HashinTheme
@@ -71,7 +73,7 @@ fun HomeScreen(
             composable(
                 route = Screens.HomeGraph.Vault.route
             ) {
-                Vault(viewModel)
+                Vault(viewModel, innerNav)
             }
 
             composable(
@@ -87,15 +89,26 @@ fun HomeScreen(
             }
 
             composable(
-                route = Screens.HomeGraph.Search.route
-            ) {
-                Search(viewModel)
+                route = Screens.HomeGraph.Detail.route,
+                arguments = listOf(
+                    navArgument("passKeyId") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val passKeyId = backStackEntry.arguments?.getString("passKeyId")
+                // Find the passkey by its hash code
+                val passKey = viewModel.passkeys.find { it.hashCode().toString() == passKeyId }
+                passKey?.let { key ->
+                    PassKeyDetail(
+                        passKey = key,
+                        onBackPressed = { innerNav.popBackStack() }
+                    )
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview
 @Composable
 private fun HomePreview() {
     HashinTheme {

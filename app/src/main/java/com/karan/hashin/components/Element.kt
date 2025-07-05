@@ -67,9 +67,9 @@ fun Element(
                     .padding(start = 16.dp)
             ) {
                 Text(
-                    text = "Netflix",
+                    text = passKey.webSite.ifEmpty { "Website" },
                     fontSize = 22.sp,
-                    color = Color.Red
+                    color = getColorForLabel(passKey.label)
                 )
 
                 Text(
@@ -88,7 +88,7 @@ fun Element(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(72.dp)
-                    .background(Color.Red)
+                    .background(getColorForLabel(passKey.label))
             ) {
                 Text(
                     text = passKey.label.firstOrNull()?.uppercase() ?: "",
@@ -105,5 +105,16 @@ fun Element(
 private fun PreviewElement() {
     HashinTheme {
         Element(PassKey("", "", "", ""), Modifier.padding(top = 144.dp)) {}
+    }
+}
+
+private fun getColorForLabel(label: String): Color {
+    return when (label.lowercase()) {
+        "personal" -> Color(0xFF2196F3) // Blue
+        "work" -> Color(0xFF4CAF50) // Green
+        "business" -> Color(0xFFFF9800) // Orange
+        "social" -> Color(0xFFE91E63) // Pink
+        "other" -> Color(0xFF9C27B0) // Purple
+        else -> Color(0xFFF44336) // Red (default)
     }
 }
