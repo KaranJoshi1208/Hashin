@@ -46,6 +46,7 @@ fun Passkey(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    var webSite by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
@@ -91,10 +92,21 @@ fun Passkey(
                 modifier = Modifier.padding(16.dp)
             ) {
                 OutlinedTextField(
+                    value = webSite,
+                    onValueChange = { webSite = it },
+                    label = { Text("Website") },
+                    leadingIcon = { Icon(Icons.Default.Web, contentDescription = "Website name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF6200EE),
+                        focusedLabelColor = Color(0xFF6200EE)
+                    )
+                )
+                OutlinedTextField(
                     value = userName,
                     onValueChange = { userName = it },
                     label = { Text("Username") },
-                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFF6200EE),
@@ -106,7 +118,7 @@ fun Passkey(
                     value = pass,
                     onValueChange = { pass = it },
                     label = { Text("Password") },
-                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
                     trailingIcon = {
                         val image =
                             if (isPasswordVisible) R.drawable.visibility else R.drawable.visibility_off
@@ -169,7 +181,6 @@ fun Passkey(
         LabelSelector(
             listOf("Personal", "Work", "Business", "Social", "Other")
         ) {
-//            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             label = it
         }
 
@@ -178,7 +189,7 @@ fun Passkey(
         // Save Button
         Button(
             onClick = {
-                viewModel.addPassKey(userName, pass, desc, label)
+                viewModel.addPassKey(webSite, userName, pass, desc, label)
                 // reset input fields
                 userName = ""
                 pass = ""
@@ -290,5 +301,6 @@ fun LabelSelector(
 private fun PreviewPassKey() {
     HashinTheme {
         Passkey(viewModel<HomeViewModel>())
+//        Passkey()
     }
 }

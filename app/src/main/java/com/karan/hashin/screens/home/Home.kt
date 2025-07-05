@@ -27,14 +27,6 @@ fun HomeScreen(
     val innerNav = rememberNavController()
 
     Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                onSearch = {
-//                    innerNav.navigate(Screens.HomeGraph.Search.route)
-//                },
-//                modifier = Modifier
-//            )
-//        },
         bottomBar = {
             BottomAppBar(
                 toVault = {

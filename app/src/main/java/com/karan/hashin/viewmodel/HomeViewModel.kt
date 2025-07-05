@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
+    var isFetchingData = false
     var passkeys: SnapshotStateList<PassKey> = mutableStateListOf<PassKey>()
 
     private val user = FirebaseAuth.getInstance().currentUser!!
@@ -23,16 +24,18 @@ class HomeViewModel : ViewModel() {
         getPassKey(user)
     }
 
-    fun addPassKey(userName: String, pass: String, desc: String, label: String) {
+    fun addPassKey(webSite:String, userName: String, pass: String, desc: String, label: String) {
         viewModelScope.launch(dispatcher) {
-            val passKey = PassKey(userName, pass, desc, label)
+            val passKey = PassKey(webSite, userName, pass, desc, label)
             repo.addPasskey(user, passKey)
         }
     }
 
     fun getPassKey(user : FirebaseUser) {
         viewModelScope.launch(dispatcher) {
+            isFetchingData = true
             passkeys.addAll(repo.getPassKey(user))
+            isFetchingData = false
         }
     }
 }
