@@ -16,6 +16,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,7 +53,7 @@ fun PassKeyDetail(
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isUsernameVisible by remember { mutableStateOf(false) }
     var showCopiedToast by remember { mutableStateOf(false) }
-    
+
     val scale by animateFloatAsState(
         targetValue = 1f,
         animationSpec = spring(
@@ -76,35 +77,17 @@ fun PassKeyDetail(
             .verticalScroll(rememberScrollState())
     ) {
         // Top App Bar
-        TopAppBar(
-            title = { 
-                Text(
-                    text = "Passkey Details",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = onBackPressed,
-                    modifier = Modifier
-                        .scale(scale)
-                        .clip(CircleShape)
-                        .background(Color(0xFFE8EAF6))
-                ) {
-                    Icon(
-                        Icons.Default.ArrowBackIosNew,
-                        contentDescription = "Back",
-                        tint = Color(0xFF3F51B5)
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-                titleContentColor = Color(0xFF1A1A1A)
+        IconButton(
+            onClick = onBackPressed,
+            modifier = Modifier
+                .scale(scale)
+        ) {
+            Icon(
+                Icons.Default.ArrowBackIosNew,
+                contentDescription = "Back",
+                tint = Color(0xFF3F51B5)
             )
-        )
-
+        }
         // Content
         Column(
             modifier = Modifier
@@ -145,9 +128,9 @@ fun PassKeyDetail(
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Text(
                         text = passKey.webSite.ifEmpty { "Website" },
                         color = Color.White,
@@ -155,7 +138,7 @@ fun PassKeyDetail(
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
-                    
+
                     if (passKey.desc.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -184,13 +167,13 @@ fun PassKeyDetail(
                         .fillMaxWidth()
                         .padding(20.dp)
                 ) {
-                    Text(
-                        text = "Account Information",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1A1A1A),
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+//                    Text(
+//                        text = "Account Information",
+//                        style = MaterialTheme.typography.titleMedium,
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color(0xFF1A1A1A),
+//                        modifier = Modifier.padding(bottom = 16.dp)
+//                    )
 
                     // Username Section
                     DetailField(
@@ -220,66 +203,64 @@ fun PassKeyDetail(
                         }
                     )
 
-                    if (passKey.desc.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // Description Section
-                        DetailField(
-                            label = "Description",
-                            value = passKey.desc,
-                            icon = Icons.Default.Description,
-                            isVisible = true,
-                            onVisibilityToggle = null,
-                            onCopy = {
-                                copyToClipboard(context, "Description", passKey.desc)
-                                showCopiedToast = true
-                            }
-                        )
-                    }
+//                    if (passKey.desc.isNotEmpty()) {
+//                        Spacer(modifier = Modifier.height(16.dp))
+//
+//                        // Description Section
+//                        DetailField(
+//                            label = "Description",
+//                            value = passKey.desc,
+//                            icon = Icons.Default.Description,
+//                            isVisible = true,
+//                            onVisibilityToggle = null,
+//                            onCopy = {
+//                                copyToClipboard(context, "Description", passKey.desc)
+//                                showCopiedToast = true
+//                            }
+//                        )
+//                    }
                 }
             }
 
             // Action Buttons
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+//                    .height(72.dp)
+                ,
+                horizontalArrangement = Arrangement.End
             ) {
                 // Edit Button
-                Button(
+                FloatingActionButton(
                     onClick = { /* TODO: Implement edit functionality */ },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF3F51B5)
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(100),
+                    containerColor = Color.Blue.copy(alpha = 0.5f),
+                    modifier = Modifier
+                        .size(64.dp),
                 ) {
                     Icon(
                         Icons.Default.Edit,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Edit")
                 }
 
                 // Delete Button
-                Button(
+                FloatingActionButton(
                     onClick = { /* TODO: Implement delete functionality */ },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE53935)
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(100),
+                    containerColor = Color.Red,
+                    modifier = Modifier
+                        .size(64.dp)
                 ) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier
+                            .size(24.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Delete")
                 }
             }
         }
@@ -347,20 +328,20 @@ private fun DetailField(
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp)
         ) {
             Icon(
                 icon,
                 contentDescription = null,
                 tint = Color(0xFF3F51B5),
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(32.dp)
             )
-            
+
             Spacer(modifier = Modifier.width(12.dp))
-            
+
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -377,15 +358,13 @@ private fun DetailField(
                     fontWeight = FontWeight.Medium
                 )
             }
-            
+
             // Visibility Toggle Button
             if (onVisibilityToggle != null) {
                 IconButton(
                     onClick = onVisibilityToggle,
                     modifier = Modifier
                         .size(32.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFE8EAF6))
                 ) {
                     Icon(
                         if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
@@ -395,16 +374,14 @@ private fun DetailField(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.width(8.dp))
-            
+
             // Copy Button
             IconButton(
                 onClick = onCopy,
                 modifier = Modifier
                     .size(32.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFE8EAF6))
             ) {
                 Icon(
                     Icons.Default.ContentCopy,

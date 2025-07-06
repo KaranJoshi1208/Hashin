@@ -19,14 +19,14 @@ class FireStoreDB {
 
     private val db = FirebaseFirestore.getInstance()
 
-     suspend fun addPasskeyToVault(user: FirebaseUser, passKey: PassKey) {
+    suspend fun addPasskeyToVault(user: FirebaseUser, passKey: PassKey) {
         db.collection(DB_COLLECTION)
             .document(user.uid)
             .collection(VAULT_COLLECTION)
             .add(passKey)
     }
 
-    suspend fun getPassKey(user: FirebaseUser): List<PassKey>{
+    suspend fun getPassKey(user: FirebaseUser): List<PassKey> {
         return try {
             val snapshot = db
                 .collection(DB_COLLECTION)
@@ -38,7 +38,7 @@ class FireStoreDB {
             snapshot.documents.mapNotNull {
                 it.toObject(PassKey::class.java)
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             Log.e("#ined", "Error fetching passkeys from FireStore Cloud DB", e)
             emptyList()
         }

@@ -38,4 +38,6 @@ class HomeViewModel : ViewModel() {
             isFetchingData = false
         }
     }
+
+    fun updatePasskey()
 }
