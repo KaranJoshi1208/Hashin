@@ -203,19 +203,19 @@ fun ViewKey(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun PreviewViewKey() {
-    HashinTheme {
-        ViewKey(
-            passKey = PassKey(
-                userName = "john.doe@example.com",
-                pass = "password123",
-                desc = "Netflix account",
-                label = "N"
-            ),
-//            viewModel = viewModel<HomeViewModel>(),
-            onBackPressed = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun PreviewViewKey() {
+//    HashinTheme {
+//        ViewKey(
+//            passKey = PassKey(
+//                userName = "john.doe@example.com",
+//                pass = "password123",
+//                desc = "Netflix account",
+//                label = "N"
+//            ),
+////            viewModel = viewModel<HomeViewModel>(),
+//            onBackPressed = {}
+//        )
+//    }
+//}

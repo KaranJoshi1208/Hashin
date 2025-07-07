@@ -1,7 +1,6 @@
 package com.karan.hashin.repos
 
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
 import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.model.remote.FireStoreDB
 
@@ -13,7 +12,11 @@ class HomeRepo {
         fire.addPasskeyToVault(user, passKey)
     }
 
-    suspend fun getPassKey(user : FirebaseUser): List<PassKey> {
-        return fire.getPassKey(user)
+    suspend fun getPasskey(user : FirebaseUser): List<PassKey> {
+        return fire.getPasskey(user)
+    }
+
+    suspend fun updatePasskey(user: FirebaseUser, newPassKey: PassKey): Boolean {
+        return fire.updatePasskey(user, newPassKey)
     }
 }

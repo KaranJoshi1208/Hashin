@@ -67,7 +67,7 @@ fun Element(
                     .padding(start = 16.dp)
             ) {
                 Text(
-                    text = passKey.webSite.ifEmpty { "Website" },
+                    text = passKey.service.ifEmpty { "Website" },
                     fontSize = 22.sp,
                     color = getColorForLabel(passKey.label)
                 )

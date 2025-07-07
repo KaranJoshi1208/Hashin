@@ -5,9 +5,10 @@ import androidx.room.Entity
 
 @Entity(tableName = "passkey")
 data class PassKey(
-    val webSite: String = "",
-    val userName: String = "",
-    val pass: String = "",
-    val desc: String = "",
-    val label: String = ""
+    var id : String,
+    var service: String = "",
+    var userName: String = "",
+    var pass: String = "",
+    var desc: String = "",
+    var label: String = ""
 )

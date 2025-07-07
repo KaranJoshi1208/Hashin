@@ -14,7 +14,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
@@ -32,8 +31,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -85,7 +82,7 @@ fun PassKeyDetail(
             Icon(
                 Icons.Default.ArrowBackIosNew,
                 contentDescription = "Back",
-                tint = Color(0xFF3F51B5)
+                tint = Color.Black
             )
         }
         // Content
@@ -124,15 +121,15 @@ fun PassKeyDetail(
                         Text(
                             text = passKey.label.firstOrNull()?.uppercase() ?: "?",
                             color = Color.White,
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold
+                            fontSize = 36.sp,
+                            fontWeight = FontWeight.W200
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = passKey.webSite.ifEmpty { "Website" },
+                        text = passKey.service.ifEmpty { "Website" },
                         color = Color.White,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
@@ -228,32 +225,37 @@ fun PassKeyDetail(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-//                    .height(72.dp)
+                    .padding(top = 24.dp)
                 ,
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 // Edit Button
-                FloatingActionButton(
+                Button(
                     onClick = { /* TODO: Implement edit functionality */ },
-                    shape = RoundedCornerShape(100),
-                    containerColor = Color.Blue.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE040FB)
+                    ),
                     modifier = Modifier
-                        .size(64.dp),
+                        .weight(1f)
                 ) {
                     Icon(
                         Icons.Default.Edit,
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
                     )
                 }
 
                 // Delete Button
-                FloatingActionButton(
+                Button (
                     onClick = { /* TODO: Implement delete functionality */ },
-                    shape = RoundedCornerShape(100),
-                    containerColor = Color.Red,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF6E40)
+                    ),
                     modifier = Modifier
-                        .size(64.dp)
+                        .weight(1f)
                 ) {
                     Icon(
                         Icons.Default.Delete,
@@ -336,7 +338,7 @@ private fun DetailField(
             Icon(
                 icon,
                 contentDescription = null,
-                tint = Color(0xFF3F51B5),
+                tint = Color.Black,
                 modifier = Modifier.size(32.dp)
             )
 
@@ -348,7 +350,7 @@ private fun DetailField(
                 Text(
                     text = label,
                     fontSize = 12.sp,
-                    color = Color(0xFF666666),
+                    color = Color.Black,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
@@ -369,7 +371,7 @@ private fun DetailField(
                     Icon(
                         if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                         contentDescription = "Toggle visibility",
-                        tint = Color(0xFF3F51B5),
+                        tint = Color.Black,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -386,7 +388,7 @@ private fun DetailField(
                 Icon(
                     Icons.Default.ContentCopy,
                     contentDescription = "Copy",
-                    tint = Color(0xFF3F51B5),
+                    tint = Color.Black,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -407,7 +409,8 @@ private fun PreviewPassKeyDetail() {
     HashinTheme {
         PassKeyDetail(
             passKey = PassKey(
-                webSite = "Netflix",
+                id = "axpien123inac",
+                service = "Netflix",
                 userName = "john.doe@example.com",
                 pass = "securePassword123",
                 desc = "My Netflix streaming account",

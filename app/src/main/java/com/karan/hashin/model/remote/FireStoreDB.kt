@@ -20,13 +20,15 @@ class FireStoreDB {
     private val db = FirebaseFirestore.getInstance()
 
     suspend fun addPasskeyToVault(user: FirebaseUser, passKey: PassKey) {
-        db.collection(DB_COLLECTION)
+        val doc = db.collection(DB_COLLECTION)
             .document(user.uid)
             .collection(VAULT_COLLECTION)
-            .add(passKey)
+            .document()
+        passKey.id = doc.id
+        doc.set(passKey).await()
     }
 
-    suspend fun getPassKey(user: FirebaseUser): List<PassKey> {
+    suspend fun getPasskey(user: FirebaseUser): List<PassKey> {
         return try {
             val snapshot = db
                 .collection(DB_COLLECTION)
@@ -41,6 +43,21 @@ class FireStoreDB {
         } catch (e: Exception) {
             Log.e("#ined", "Error fetching passkeys from FireStore Cloud DB", e)
             emptyList()
+        }
+    }
+
+    suspend fun updatePasskey(user: FirebaseUser, newPassKey: PassKey): Boolean {
+        return try {
+            db.collection(DB_COLLECTION)
+                .document(user.uid)
+                .collection(VAULT_COLLECTION)
+                .document(newPassKey.id)
+                .set(newPassKey)            // Overwrites the document
+                .await()
+            true
+        } catch (e: Exception) {
+            Log.e("#ined", "Error updating passkey", e)
+            false
         }
     }
 }

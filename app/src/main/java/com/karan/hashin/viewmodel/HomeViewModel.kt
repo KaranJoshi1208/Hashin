@@ -34,10 +34,14 @@ class HomeViewModel : ViewModel() {
     fun getPassKey(user : FirebaseUser) {
         viewModelScope.launch(dispatcher) {
             isFetchingData = true
-            passkeys.addAll(repo.getPassKey(user))
+            passkeys.addAll(repo.getPasskey(user))
             isFetchingData = false
         }
     }
 
-    fun updatePasskey()
+    fun updatePasskey(user: FirebaseUser, newPassKey: PassKey) {
+        viewModelScope.launch(dispatcher) {
+            repo.updatePasskey(user, newPassKey)
+        }
+    }
 }
