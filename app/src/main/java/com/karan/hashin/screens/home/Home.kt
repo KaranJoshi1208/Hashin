@@ -89,20 +89,9 @@ fun HomeScreen(
             }
 
             composable(
-                route = Screens.HomeGraph.Detail.route,
-                arguments = listOf(
-                    navArgument("passKeyId") { type = NavType.StringType }
-                )
-            ) { backStackEntry ->
-                val passKeyId = backStackEntry.arguments?.getString("passKeyId")
-                // Find the passkey by its hash code
-                val passKey = viewModel.passkeys.find { it.hashCode().toString() == passKeyId }
-                passKey?.let { key ->
-                    PassKeyDetail(
-                        passKey = key,
-                        onBackPressed = { innerNav.popBackStack() }
-                    )
-                }
+                route = Screens.HomeGraph.Detail.route
+            ) {
+                PassKeyDetail(viewModel)
             }
         }
     }

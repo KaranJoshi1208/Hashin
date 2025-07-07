@@ -37,16 +37,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.ui.theme.HashinTheme
+import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PassKeyDetail(
-    passKey: PassKey,
-    onBackPressed: () -> Unit,
+    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val passkey = viewModel.passkeys[viewModel.userSelected]
+
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isUsernameVisible by remember { mutableStateOf(false) }
     var showCopiedToast by remember { mutableStateOf(false) }
@@ -75,7 +77,9 @@ fun PassKeyDetail(
     ) {
         // Top App Bar
         IconButton(
-            onClick = onBackPressed,
+            onClick = {
+                // TODO ( Define onBackPressed )
+            },
             modifier = Modifier
                 .scale(scale)
         ) {
@@ -119,7 +123,7 @@ fun PassKeyDetail(
                             .background(Color.White.copy(alpha = 0.2f))
                     ) {
                         Text(
-                            text = passKey.label.firstOrNull()?.uppercase() ?: "?",
+                            text = passkey.label.firstOrNull()?.uppercase() ?: "?",
                             color = Color.White,
                             fontSize = 36.sp,
                             fontWeight = FontWeight.W200
@@ -129,17 +133,17 @@ fun PassKeyDetail(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = passKey.service.ifEmpty { "Website" },
+                        text = passkey.service.ifEmpty { "Website" },
                         color = Color.White,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
 
-                    if (passKey.desc.isNotEmpty()) {
+                    if (passkey.desc.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = passKey.desc,
+                            text = passkey.desc,
                             color = Color.White.copy(alpha = 0.9f),
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center
@@ -175,12 +179,12 @@ fun PassKeyDetail(
                     // Username Section
                     DetailField(
                         label = "Username",
-                        value = passKey.userName,
+                        value = passkey.userName,
                         icon = Icons.Default.Person,
                         isVisible = isUsernameVisible,
                         onVisibilityToggle = { isUsernameVisible = !isUsernameVisible },
                         onCopy = {
-                            copyToClipboard(context, "Username", passKey.userName)
+                            copyToClipboard(context, "Username", passkey.userName)
                             showCopiedToast = true
                         }
                     )
@@ -190,12 +194,12 @@ fun PassKeyDetail(
                     // Password Section
                     DetailField(
                         label = "Password",
-                        value = passKey.pass,
+                        value = passkey.pass,
                         icon = Icons.Default.Lock,
                         isVisible = isPasswordVisible,
                         onVisibilityToggle = { isPasswordVisible = !isPasswordVisible },
                         onCopy = {
-                            copyToClipboard(context, "Password", passKey.pass)
+                            copyToClipboard(context, "Password", passkey.pass)
                             showCopiedToast = true
                         }
                     )
@@ -407,16 +411,16 @@ private fun copyToClipboard(context: Context, label: String, text: String) {
 @Composable
 private fun PreviewPassKeyDetail() {
     HashinTheme {
-        PassKeyDetail(
-            passKey = PassKey(
-                id = "axpien123inac",
-                service = "Netflix",
-                userName = "john.doe@example.com",
-                pass = "securePassword123",
-                desc = "My Netflix streaming account",
-                label = "N"
-            ),
-            onBackPressed = {}
-        )
+//        PassKeyDetail(
+//            passKey = PassKey(
+//                id = "axpien123inac",
+//                service = "Netflix",
+//                userName = "john.doe@example.com",
+//                pass = "securePassword123",
+//                desc = "My Netflix streaming account",
+//                label = "N"
+//            ),
+//            onBackPressed = {}
+//        )
     }
 } 

@@ -10,6 +10,6 @@ sealed class Screens(open val route: String) {
         object Passkey : HomeGraph(route = "home/add")
         object Setting : HomeGraph(route = "home/settings")
         object Search : HomeGraph(route = "home/search")
-        object Detail : HomeGraph(route = "home/detail/{passKeyId}")
+        object Detail : HomeGraph(route = "home/detail")
     }
 }

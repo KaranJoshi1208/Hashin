@@ -14,6 +14,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel : ViewModel() {
 
     var isFetchingData = false
+    // this defines the index of the passkey that user tapped on
+    var userSelected = -1
     var passkeys: SnapshotStateList<PassKey> = mutableStateListOf<PassKey>()
 
     private val user = FirebaseAuth.getInstance().currentUser!!

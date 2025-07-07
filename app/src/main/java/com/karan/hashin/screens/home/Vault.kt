@@ -101,15 +101,11 @@ fun Vault(
                     ) {
                         items(
                             items = data,
-                            key = { it.hashCode() }
+                            key = { it.id }
                         ) { passKey ->
                             Element(passKey) {
-                                // Navigate to detail screen with passkey data
-                                val route = Screens.HomeGraph.Detail.route.replace(
-                                    "{passKeyId}",
-                                    passKey.hashCode().toString()
-                                )
-                                navController.navigate(route) {
+                                viewModel.userSelected = data.indexOf(passKey)
+                                navController.navigate(Screens.HomeGraph.Detail) {
                                     launchSingleTop = true
                                 }
                             }
