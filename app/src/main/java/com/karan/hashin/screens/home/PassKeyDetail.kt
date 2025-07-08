@@ -3,6 +3,7 @@ package com.karan.hashin.screens.home
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Paint.Align
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -29,12 +31,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.viewmodel.HomeViewModel
@@ -44,6 +53,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun PassKeyDetail(
     viewModel: HomeViewModel,
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -78,7 +88,7 @@ fun PassKeyDetail(
         // Top App Bar
         IconButton(
             onClick = {
-                // TODO ( Define onBackPressed )
+                navController.popBackStack()
             },
             modifier = Modifier
                 .scale(scale)
@@ -177,12 +187,8 @@ fun PassKeyDetail(
 //                    )
 
                     // Username Section
-                    DetailField(
-                        label = "Username",
+                    UsernameField(
                         value = passkey.userName,
-                        icon = Icons.Default.Person,
-                        isVisible = isUsernameVisible,
-                        onVisibilityToggle = { isUsernameVisible = !isUsernameVisible },
                         onCopy = {
                             copyToClipboard(context, "Username", passkey.userName)
                             showCopiedToast = true
@@ -192,34 +198,11 @@ fun PassKeyDetail(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Password Section
-                    DetailField(
-                        label = "Password",
-                        value = passkey.pass,
-                        icon = Icons.Default.Lock,
+                    PasswordField(
+                        key = passkey.pass,
                         isVisible = isPasswordVisible,
                         onVisibilityToggle = { isPasswordVisible = !isPasswordVisible },
-                        onCopy = {
-                            copyToClipboard(context, "Password", passkey.pass)
-                            showCopiedToast = true
-                        }
                     )
-
-//                    if (passKey.desc.isNotEmpty()) {
-//                        Spacer(modifier = Modifier.height(16.dp))
-//
-//                        // Description Section
-//                        DetailField(
-//                            label = "Description",
-//                            value = passKey.desc,
-//                            icon = Icons.Default.Description,
-//                            isVisible = true,
-//                            onVisibilityToggle = null,
-//                            onCopy = {
-//                                copyToClipboard(context, "Description", passKey.desc)
-//                                showCopiedToast = true
-//                            }
-//                        )
-//                    }
                 }
             }
 
@@ -229,8 +212,7 @@ fun PassKeyDetail(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp)
-                ,
+                    .padding(top = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 // Edit Button
@@ -252,7 +234,7 @@ fun PassKeyDetail(
                 }
 
                 // Delete Button
-                Button (
+                Button(
                     onClick = { /* TODO: Implement delete functionality */ },
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -318,12 +300,8 @@ fun PassKeyDetail(
 }
 
 @Composable
-private fun DetailField(
-    label: String,
+private fun UsernameField(
     value: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    isVisible: Boolean,
-    onVisibilityToggle: (() -> Unit)?,
     onCopy: () -> Unit
 ) {
     Card(
@@ -340,48 +318,28 @@ private fun DetailField(
                 .padding(16.dp)
         ) {
             Icon(
-                icon,
+                imageVector = Icons.Default.Person,
                 contentDescription = null,
                 tint = Color.Black,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(28.dp)
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = label,
-                    fontSize = 12.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Medium
+            TextField(
+                value = value,
+                onValueChange = { },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFFF8F9FA),
+                    unfocusedContainerColor = Color(0xFFF8F9FA),
+                    disabledContainerColor = Color(0xFFF8F9FA),
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
                 )
-                Text(
-                    text = if (isVisible) value else "••••••••••••••••",
-                    fontSize = 16.sp,
-                    color = Color(0xFF1A1A1A),
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            )
 
-            // Visibility Toggle Button
-            if (onVisibilityToggle != null) {
-                IconButton(
-                    onClick = onVisibilityToggle,
-                    modifier = Modifier
-                        .size(32.dp)
-                ) {
-                    Icon(
-                        if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        contentDescription = "Toggle visibility",
-                        tint = Color.Black,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             // Copy Button
             IconButton(
@@ -400,6 +358,69 @@ private fun DetailField(
     }
 }
 
+@Composable
+private fun PasswordField(
+    key: String,
+    isVisible: Boolean,
+    onVisibilityToggle: (() -> Unit),
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFF8F9FA)
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = null,
+                tint = Color.Black,
+                modifier = Modifier.size(28.dp)
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                TextField(
+                    value = key,
+                    onValueChange = { },
+                    visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFFF8F9FA),
+                        unfocusedContainerColor = Color(0xFFF8F9FA),
+                        disabledContainerColor = Color(0xFFF8F9FA),
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    )
+                )
+            }
+
+            // Visibility Toggle Button
+            IconButton(
+                onClick = onVisibilityToggle,
+                modifier = Modifier
+                    .size(32.dp)
+            ) {
+                Icon(
+                    if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    contentDescription = "Toggle visibility",
+                    tint = Color.Black,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+    }
+}
+
 private fun copyToClipboard(context: Context, label: String, text: String) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText(label, text)
@@ -407,11 +428,13 @@ private fun copyToClipboard(context: Context, label: String, text: String) {
     Toast.makeText(context, "$label copied to clipboard", Toast.LENGTH_SHORT).show()
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = false)
 @Composable
 private fun PreviewPassKeyDetail() {
     HashinTheme {
 //        PassKeyDetail(
+//            viewModel<HomeViewModel>(),
+//            rememberNavController(),
 //            passKey = PassKey(
 //                id = "axpien123inac",
 //                service = "Netflix",
@@ -422,5 +445,10 @@ private fun PreviewPassKeyDetail() {
 //            ),
 //            onBackPressed = {}
 //        )
+        PasswordField(
+            key = "Bolt",
+            isVisible = false,
+            onVisibilityToggle = { }
+        )
     }
 } 

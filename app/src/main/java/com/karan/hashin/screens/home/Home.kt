@@ -91,7 +91,7 @@ fun HomeScreen(
             composable(
                 route = Screens.HomeGraph.Detail.route
             ) {
-                PassKeyDetail(viewModel)
+                PassKeyDetail(viewModel, innerNav)
             }
         }
     }
