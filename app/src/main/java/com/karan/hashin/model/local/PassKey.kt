@@ -5,7 +5,7 @@ import androidx.room.Entity
 
 @Entity(tableName = "passkey")
 data class PassKey(
-    var id : String,
+    var id : String = "",
     var service: String = "",
     var userName: String = "",
     var pass: String = "",

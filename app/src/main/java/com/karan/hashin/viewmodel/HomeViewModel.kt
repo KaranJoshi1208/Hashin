@@ -26,9 +26,15 @@ class HomeViewModel : ViewModel() {
         getPassKey(user)
     }
 
-    fun addPassKey(webSite:String, userName: String, pass: String, desc: String, label: String) {
+    fun addPassKey(service: String, userName: String, pass: String, desc: String, label: String) {
         viewModelScope.launch(dispatcher) {
-            val passKey = PassKey(webSite, userName, pass, desc, label)
+            val passKey = PassKey(
+                id = "",
+                service = service,
+                userName = userName,
+                pass = pass,
+                desc = desc,
+                label = label)
             repo.addPasskey(user, passKey)
         }
     }

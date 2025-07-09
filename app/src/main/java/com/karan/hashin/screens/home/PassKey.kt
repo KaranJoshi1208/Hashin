@@ -1,6 +1,5 @@
 package com.karan.hashin.screens.home
 
-import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -20,7 +19,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -37,7 +35,6 @@ import com.karan.hashin.R
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +43,7 @@ fun Passkey(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    var webSite by remember { mutableStateOf("") }
+    var service by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
@@ -92,8 +89,8 @@ fun Passkey(
                 modifier = Modifier.padding(16.dp)
             ) {
                 OutlinedTextField(
-                    value = webSite,
-                    onValueChange = { webSite = it },
+                    value = service,
+                    onValueChange = { service = it },
                     label = { Text("Website") },
                     leadingIcon = { Icon(Icons.Default.Web, contentDescription = "Website name") },
                     modifier = Modifier.fillMaxWidth(),
@@ -189,8 +186,9 @@ fun Passkey(
         // Save Button
         Button(
             onClick = {
-                viewModel.addPassKey(webSite, userName, pass, desc, label)
+                viewModel.addPassKey(service, userName, pass, desc, label)
                 // reset input fields
+                service = ""
                 userName = ""
                 pass = ""
                 desc = ""

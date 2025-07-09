@@ -107,16 +107,16 @@ fun PassKeyDetail(
         ) {
             // Header Card with Label
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0xFF3F51B5)
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 8.dp
                 ),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -133,7 +133,7 @@ fun PassKeyDetail(
                             .background(Color.White.copy(alpha = 0.2f))
                     ) {
                         Text(
-                            text = passkey.label.firstOrNull()?.uppercase() ?: "?",
+                            text = passkey.label.firstOrNull()?.uppercase() ?: "",
                             color = Color.White,
                             fontSize = 36.sp,
                             fontWeight = FontWeight.W200
@@ -201,7 +201,9 @@ fun PassKeyDetail(
                     PasswordField(
                         key = passkey.pass,
                         isVisible = isPasswordVisible,
-                        onVisibilityToggle = { isPasswordVisible = !isPasswordVisible },
+                        onVisibilityToggle = {
+                            isPasswordVisible = !isPasswordVisible
+                        },
                     )
                 }
             }
@@ -392,6 +394,7 @@ private fun PasswordField(
                 TextField(
                     value = key,
                     onValueChange = { },
+                    readOnly = !isVisible,
                     visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color(0xFFF8F9FA),
@@ -447,7 +450,7 @@ private fun PreviewPassKeyDetail() {
 //        )
         PasswordField(
             key = "Bolt",
-            isVisible = false,
+            isVisible = true,
             onVisibilityToggle = { }
         )
     }

@@ -52,11 +52,11 @@ fun Vault(
             .navigationBarsPadding()
     ) {
         // Top App Bar
-        TopAppBar(
-            onSearch = {
-                // TODO: Implement search functionality
-            }
-        )
+//        TopAppBar(
+//            onSearch = {
+//                // TODO: Implement search functionality
+//            }
+//        )
 
         // Content
         Box(
@@ -105,7 +105,7 @@ fun Vault(
                         ) { passKey ->
                             Element(passKey) {
                                 viewModel.userSelected = data.indexOf(passKey)
-                                navController.navigate(Screens.HomeGraph.Detail) {
+                                navController.navigate(Screens.HomeGraph.Detail.route) {
                                     launchSingleTop = true
                                 }
                             }
@@ -120,7 +120,5 @@ fun Vault(
 @Preview
 @Composable
 private fun VaultPreview() {
-    // Note: This is a simplified preview without NavController
-    // In actual usage, NavController will be provided by the parent
     Vault(viewModel<HomeViewModel>(), rememberNavController())
 }
