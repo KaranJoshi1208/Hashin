@@ -47,7 +47,7 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun updatePasskey(user: FirebaseUser, newPassKey: PassKey) {
+    fun updatePasskey(newPassKey: PassKey) {
         viewModelScope.launch(dispatcher) {
             repo.updatePasskey(user, newPassKey)
         }

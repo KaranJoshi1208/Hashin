@@ -3,7 +3,6 @@ package com.karan.hashin.screens.home
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.Paint.Align
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -31,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -40,11 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
@@ -59,9 +52,13 @@ fun PassKeyDetail(
     val context = LocalContext.current
     val passkey = viewModel.passkeys[viewModel.userSelected]
 
+    var showSave by remember { mutableStateOf(false) }
+
     var isPasswordVisible by remember { mutableStateOf(false) }
-    var isUsernameVisible by remember { mutableStateOf(false) }
     var showCopiedToast by remember { mutableStateOf(false) }
+
+    var userName by remember { mutableStateOf(passkey.userName) }
+//    var pass by remember { mutableStateOf(passkey.pass) }
 
     val scale by animateFloatAsState(
         targetValue = 1f,
@@ -188,7 +185,13 @@ fun PassKeyDetail(
 
                     // Username Section
                     UsernameField(
-                        value = passkey.userName,
+                        name = userName,
+                        onEdit = {
+                            userName = it
+                            if(it.trim() != passkey.userName) {
+//                                TODO(Toggle state to display the Save button)
+                            }
+                        },
                         onCopy = {
                             copyToClipboard(context, "Username", passkey.userName)
                             showCopiedToast = true
@@ -253,6 +256,18 @@ fun PassKeyDetail(
                     )
                 }
             }
+
+            if(showSave) {
+                SaveChange(
+                    onClick = {
+                        val newPasskey = passkey.copy(
+                            userName = userName,
+//                            TODO( edit password) ??
+                        )
+                        viewModel.updatePasskey(newPasskey)
+                    }
+                )
+            }
         }
     }
 
@@ -303,15 +318,17 @@ fun PassKeyDetail(
 
 @Composable
 private fun UsernameField(
-    value: String,
+    name: String,
+    onEdit: (String) -> Unit,
     onCopy: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF8F9FA)
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -329,8 +346,8 @@ private fun UsernameField(
             Spacer(modifier = Modifier.width(12.dp))
 
             TextField(
-                value = value,
-                onValueChange = { },
+                value = name,
+                onValueChange = { onEdit(it) },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color(0xFFF8F9FA),
                     unfocusedContainerColor = Color(0xFFF8F9FA),
@@ -367,11 +384,12 @@ private fun PasswordField(
     onVisibilityToggle: (() -> Unit),
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF8F9FA)
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -424,6 +442,26 @@ private fun PasswordField(
     }
 }
 
+@Composable
+fun SaveChange(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = { onClick },
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFAA00FF)
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Text("Save Changes")
+
+    }
+    
+}
+
 private fun copyToClipboard(context: Context, label: String, text: String) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText(label, text)
@@ -448,10 +486,10 @@ private fun PreviewPassKeyDetail() {
 //            ),
 //            onBackPressed = {}
 //        )
-        PasswordField(
-            key = "Bolt",
-            isVisible = true,
-            onVisibilityToggle = { }
+        UsernameField(
+            name = "Bolt",
+            onEdit = {},
+            onCopy = {}
         )
     }
 } 
