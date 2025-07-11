@@ -57,8 +57,8 @@ fun PassKeyDetail(
     var isPasswordVisible by remember { mutableStateOf(false) }
     var showCopiedToast by remember { mutableStateOf(false) }
 
-    var userName by remember { mutableStateOf(passkey.userName) }
-//    var pass by remember { mutableStateOf(passkey.pass) }
+    var encryptedKey by remember { mutableStateOf(passkey.pass) }
+    var decryptedKey by remember { mutableStateOf(passkey.pass) }
 
     val scale by animateFloatAsState(
         targetValue = 1f,
@@ -175,23 +175,9 @@ fun PassKeyDetail(
                         .fillMaxWidth()
                         .padding(20.dp)
                 ) {
-//                    Text(
-//                        text = "Account Information",
-//                        style = MaterialTheme.typography.titleMedium,
-//                        fontWeight = FontWeight.Bold,
-//                        color = Color(0xFF1A1A1A),
-//                        modifier = Modifier.padding(bottom = 16.dp)
-//                    )
-
                     // Username Section
                     UsernameField(
-                        name = userName,
-                        onEdit = {
-                            userName = it
-                            if(it.trim() != passkey.userName) {
-//                                TODO(Toggle state to display the Save button)
-                            }
-                        },
+                        name = passkey.userName,
                         onCopy = {
                             copyToClipboard(context, "Username", passkey.userName)
                             showCopiedToast = true
@@ -205,8 +191,19 @@ fun PassKeyDetail(
                         key = passkey.pass,
                         isVisible = isPasswordVisible,
                         onVisibilityToggle = {
-                            isPasswordVisible = !isPasswordVisible
+                            if(!isPasswordVisible) {
+                                if(decryptedKey.isEmpty()){
+//                              TODO("Decrypt the key here and hold a reference to it")
+                                }
+                                isPasswordVisible = true
+                            }
+                            else {
+                                isPasswordVisible = false
+                            }
                         },
+                        onValueChange = {
+                            if(it != decryptedKey) showSave = true
+                        }
                     )
                 }
             }
@@ -261,7 +258,7 @@ fun PassKeyDetail(
                 SaveChange(
                     onClick = {
                         val newPasskey = passkey.copy(
-                            userName = userName,
+//                            userName = userName,
 //                            TODO( edit password) ??
                         )
                         viewModel.updatePasskey(newPasskey)
@@ -319,7 +316,6 @@ fun PassKeyDetail(
 @Composable
 private fun UsernameField(
     name: String,
-    onEdit: (String) -> Unit,
     onCopy: () -> Unit
 ) {
     Card(
@@ -345,17 +341,10 @@ private fun UsernameField(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            TextField(
-                value = name,
-                onValueChange = { onEdit(it) },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFFF8F9FA),
-                    unfocusedContainerColor = Color(0xFFF8F9FA),
-                    disabledContainerColor = Color(0xFFF8F9FA),
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                )
+            Text(
+                text = name,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.W400
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -382,7 +371,11 @@ private fun PasswordField(
     key: String,
     isVisible: Boolean,
     onVisibilityToggle: (() -> Unit),
+    onValueChange: (String) -> Unit
 ) {
+
+    var pass by remember { mutableStateOf("") }
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF8F9FA)
@@ -411,7 +404,9 @@ private fun PasswordField(
             ) {
                 TextField(
                     value = key,
-                    onValueChange = { },
+                    onValueChange = {
+                        onValueChange(it)
+                    },
                     readOnly = !isVisible,
                     visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     colors = TextFieldDefaults.colors(
@@ -427,7 +422,9 @@ private fun PasswordField(
 
             // Visibility Toggle Button
             IconButton(
-                onClick = onVisibilityToggle,
+                onClick = {
+                    onVisibilityToggle()
+                },
                 modifier = Modifier
                     .size(32.dp)
             ) {
@@ -435,7 +432,8 @@ private fun PasswordField(
                     if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                     contentDescription = "Toggle visibility",
                     tint = Color.Black,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier
+                        .size(18.dp)
                 )
             }
         }
@@ -473,23 +471,11 @@ private fun copyToClipboard(context: Context, label: String, text: String) {
 @Composable
 private fun PreviewPassKeyDetail() {
     HashinTheme {
-//        PassKeyDetail(
-//            viewModel<HomeViewModel>(),
-//            rememberNavController(),
-//            passKey = PassKey(
-//                id = "axpien123inac",
-//                service = "Netflix",
-//                userName = "john.doe@example.com",
-//                pass = "securePassword123",
-//                desc = "My Netflix streaming account",
-//                label = "N"
-//            ),
-//            onBackPressed = {}
-//        )
-        UsernameField(
-            name = "Bolt",
-            onEdit = {},
-            onCopy = {}
+        PasswordField (
+            key = "Bolt",
+            isVisible = false,
+            onVisibilityToggle = {},
+            onValueChange = {}
         )
     }
 } 
