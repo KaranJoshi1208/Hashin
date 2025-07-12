@@ -14,6 +14,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
@@ -30,6 +32,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -54,11 +59,11 @@ fun PassKeyDetail(
 
     var showSave by remember { mutableStateOf(false) }
 
-    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isKeyVisible by remember { mutableStateOf(false) }
     var showCopiedToast by remember { mutableStateOf(false) }
 
-    var encryptedKey by remember { mutableStateOf(passkey.pass) }
-    var decryptedKey by remember { mutableStateOf(passkey.pass) }
+    var newKey by remember { mutableStateOf(passkey.pass) }
+//    var key by remember { mutableStateOf(passkey.pass) }
 
     val scale by animateFloatAsState(
         targetValue = 1f,
@@ -82,19 +87,47 @@ fun PassKeyDetail(
             .background(Color(0xFFF8F9FA))
             .verticalScroll(rememberScrollState())
     ) {
-        // Top App Bar
-        IconButton(
-            onClick = {
-                navController.popBackStack()
-            },
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .scale(scale)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
-            Icon(
-                Icons.Default.ArrowBackIosNew,
-                contentDescription = "Back",
-                tint = Color.Black
-            )
+            Box(
+                modifier = Modifier
+                    .scale(scale)
+                    .semantics{ role = Role.Button}
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        navController.popBackStack()
+                    }
+            ) {
+                Icon(
+                    Icons.Default.ArrowBackIosNew,
+                    contentDescription = "Back",
+                    tint = Color.Black
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .scale(scale)
+                    .semantics{ role = Role.Button}
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+//                        TODO (DELETE Functionality for PassKey)
+                    }
+            ) {
+                Icon(
+                    Icons.Default.DeleteOutline,
+                    contentDescription = "Back",
+                    tint = Color.Black
+                )
+            }
         }
         // Content
         Column(
@@ -116,10 +149,10 @@ fun PassKeyDetail(
                     .padding(bottom = 24.dp)
             ) {
                 Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(24.dp)
                 ) {
                     // Label Circle
                     Box(
@@ -140,7 +173,7 @@ fun PassKeyDetail(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = passkey.service.ifEmpty { "Website" },
+                        text = passkey.service.ifEmpty { "Service" },
                         color = Color.White,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
@@ -161,7 +194,8 @@ fun PassKeyDetail(
 
             // Details Card
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 ),
@@ -188,80 +222,29 @@ fun PassKeyDetail(
 
                     // Password Section
                     PasswordField(
-                        key = passkey.pass,
-                        isVisible = isPasswordVisible,
+                        key = newKey,
+                        isVisible = isKeyVisible,
                         onVisibilityToggle = {
-                            if(!isPasswordVisible) {
-                                if(decryptedKey.isEmpty()){
-//                              TODO("Decrypt the key here and hold a reference to it")
-                                }
-                                isPasswordVisible = true
-                            }
-                            else {
-                                isPasswordVisible = false
-                            }
+                            isKeyVisible = !isKeyVisible
                         },
                         onValueChange = {
-                            if(it != decryptedKey) showSave = true
+                            newKey = it
+                            showSave = it.trim() != passkey.pass
                         }
                     )
                 }
             }
-
             // Action Buttons
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                // Edit Button
-                Button(
-                    onClick = { /* TODO: Implement edit functionality */ },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE040FB)
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                }
-
-                // Delete Button
-                Button(
-                    onClick = { /* TODO: Implement delete functionality */ },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF6E40)
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                }
-            }
-
-            if(showSave) {
+            if (showSave) {
                 SaveChange(
                     onClick = {
                         val newPasskey = passkey.copy(
 //                            userName = userName,
 //                            TODO( edit password) ??
                         )
-                        viewModel.updatePasskey(newPasskey)
+//                        viewModel.updatePasskey(newPasskey)
                     }
                 )
             }
@@ -421,12 +404,16 @@ private fun PasswordField(
             }
 
             // Visibility Toggle Button
-            IconButton(
-                onClick = {
-                    onVisibilityToggle()
-                },
+            Box(
                 modifier = Modifier
                     .size(32.dp)
+                    .semantics{ role = Role.Button}
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        onVisibilityToggle()
+                    }
             ) {
                 Icon(
                     if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
@@ -455,9 +442,8 @@ fun SaveChange(
             .fillMaxWidth()
     ) {
         Text("Save Changes")
-
     }
-    
+
 }
 
 private fun copyToClipboard(context: Context, label: String, text: String) {
@@ -471,7 +457,7 @@ private fun copyToClipboard(context: Context, label: String, text: String) {
 @Composable
 private fun PreviewPassKeyDetail() {
     HashinTheme {
-        PasswordField (
+        PasswordField(
             key = "Bolt",
             isVisible = false,
             onVisibilityToggle = {},
