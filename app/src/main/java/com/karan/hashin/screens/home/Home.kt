@@ -40,7 +40,7 @@ fun HomeScreen(
                     }
                 },
                 toPassKey = {
-                    innerNav.navigate(Screens.HomeGraph.Passkey.route)
+                    innerNav.navigate(Screens.HomeGraph.Passkey.generateRoute(isEdit = false))
                     {
                         popUpTo(0) {
                             inclusive = false
@@ -77,9 +77,16 @@ fun HomeScreen(
             }
 
             composable(
-                route = Screens.HomeGraph.Passkey.route
+                route = Screens.HomeGraph.Passkey.route,
+                arguments = listOf(
+                    navArgument("isEdit") {
+                        type = NavType.BoolType
+                        defaultValue = false
+                    }
+                )
             ) {
-                Passkey(viewModel)
+                val isEdit = it.arguments?.getBoolean("isEdit") ?: false
+                Passkey(viewModel, isEdit)
             }
 
             composable(

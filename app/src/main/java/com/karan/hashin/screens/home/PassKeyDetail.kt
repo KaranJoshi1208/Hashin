@@ -3,6 +3,7 @@ package com.karan.hashin.screens.home
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.drawable.Icon
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -43,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.karan.hashin.navigation.Screens
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
@@ -154,6 +156,22 @@ fun PassKeyDetail(
                         .fillMaxWidth()
                         .padding(24.dp)
                 ) {
+                    Row(
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(
+                            onClick = {
+                                navController.navigate(Screens.HomeGraph.Passkey.generateRoute(isEdit = true))
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit Passkey",
+                                tint = Color.White
+                            )
+                        }
+                    }
+
                     // Label Circle
                     Box(
                         contentAlignment = Alignment.Center,

@@ -7,7 +7,9 @@ sealed class Screens(open val route: String) {
 
     sealed class HomeGraph(override val route: String) : Screens(route) {
         object Vault : HomeGraph(route = "home/vault")
-        object Passkey : HomeGraph(route = "home/add")
+        object Passkey : HomeGraph(route = "home/passkey?isEdit={isEdit}") {
+            fun generateRoute(isEdit: Boolean): String = "home/passkey?isEdit=$isEdit"
+        }
         object Setting : HomeGraph(route = "home/settings")
         object Search : HomeGraph(route = "home/search")
         object Detail : HomeGraph(route = "home/detail")

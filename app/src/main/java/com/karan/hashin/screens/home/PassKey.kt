@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.karan.hashin.R
+import com.karan.hashin.model.local.PassKey
+import com.karan.hashin.navigation.Screens
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
@@ -40,15 +42,25 @@ import kotlinx.coroutines.launch
 @Composable
 fun Passkey(
     viewModel: HomeViewModel,
+    doEdit: Boolean,
     modifier: Modifier = Modifier
 ) {
+
     val context = LocalContext.current
+
     var service by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
     var label by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+
+    val passkey = if (doEdit) viewModel.passkeys[viewModel.userSelected].also {
+        service = it.service
+        userName = it.userName
+        desc = it.desc
+        label = it.label
+    } else null
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -59,14 +71,14 @@ fun Passkey(
     ) {
 
         Text(
-            text = "Add New Passkey",
+            text = "${if (doEdit) "Update" else "Add"} Passkey ",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1A1A1A)
         )
 
         Text(
-            text = "Store your credentials securely",
+            text = "${if (doEdit) "Update" else "Store"} your credentials securely",
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )
@@ -91,7 +103,8 @@ fun Passkey(
                 OutlinedTextField(
                     value = service,
                     onValueChange = { service = it },
-                    label = { Text("Website") },
+                    label = { Text("Service") },
+                    placeholder = { Text("eg. Github", color = Color.Black.copy(alpha = 0.4f)) },
                     leadingIcon = { Icon(Icons.Default.Web, contentDescription = "Website name") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -112,8 +125,9 @@ fun Passkey(
                 )
 
                 OutlinedTextField(
-                    value = pass,
+                    value = if (doEdit) "••••••••" else pass,
                     onValueChange = { pass = it },
+                    enabled = !doEdit,
                     label = { Text("Password") },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
                     trailingIcon = {
@@ -186,7 +200,12 @@ fun Passkey(
         // Save Button
         Button(
             onClick = {
-                viewModel.addPassKey(service, userName, pass, desc, label)
+                if (doEdit) {
+                    val newPassKey = PassKey()
+                    viewModel.updatePasskey(newPassKey)
+                } else {
+                    viewModel.addPassKey(service, userName, pass, desc, label)
+                }
                 // reset input fields
                 service = ""
                 userName = ""
@@ -203,7 +222,7 @@ fun Passkey(
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(
-                text = "Save Passkey",
+                text = if (doEdit) "Update" else "Add",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White
             )
@@ -298,7 +317,6 @@ fun LabelSelector(
 @Composable
 private fun PreviewPassKey() {
     HashinTheme {
-        Passkey(viewModel<HomeViewModel>())
-//        Passkey()
+        Passkey(viewModel<HomeViewModel>(), false)
     }
 }
