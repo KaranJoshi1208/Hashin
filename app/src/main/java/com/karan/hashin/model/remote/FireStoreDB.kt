@@ -52,11 +52,26 @@ class FireStoreDB {
                 .document(user.uid)
                 .collection(VAULT_COLLECTION)
                 .document(newPassKey.id)
-                .set(newPassKey)            // Overwrites the document
+                .set(newPassKey)   // Overwrites the document
                 .await()
             true
         } catch (e: Exception) {
             Log.e("#ined", "Error updating passkey", e)
+            false
+        }
+    }
+
+    suspend fun deletePasskey(user: FirebaseUser, id: String) : Boolean {
+        return try {
+            db.collection(DB_COLLECTION)
+                .document(user.uid)
+                .collection(VAULT_COLLECTION)
+                .document(id)
+                .delete()
+                .await()
+            true
+        } catch(e : Exception) {
+            Log.e("#ined", "Error deleting passkey", e)
             false
         }
     }

@@ -19,4 +19,8 @@ class HomeRepo {
     suspend fun updatePasskey(user: FirebaseUser, newPassKey: PassKey): Boolean {
         return fire.updatePasskey(user, newPassKey)
     }
+
+    suspend fun deletePasskey(user: FirebaseUser, id: String): Boolean {
+        return fire.deletePasskey(user, id)
+    }
 }

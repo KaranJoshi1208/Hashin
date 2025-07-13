@@ -73,4 +73,10 @@ class HomeViewModel : ViewModel() {
             processing = false
         }
     }
+
+    fun deletePasskey(id: String) {
+        viewModelScope.launch(dispatcher) {
+            repo.deletePasskey(user, id)
+        }
+    }
 }

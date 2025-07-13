@@ -60,6 +60,8 @@ fun PassKeyDetail(
     val passkey = viewModel.passkeys[viewModel.userSelected]
 
     var showSave by remember { mutableStateOf(false) }
+    var deleteDialog by remember { mutableStateOf(false) }
+
 
     var isKeyVisible by remember { mutableStateOf(false) }
     var showCopiedToast by remember { mutableStateOf(false) }
@@ -74,6 +76,17 @@ fun PassKeyDetail(
             stiffness = Spring.StiffnessLow
         ),
         label = "scale"
+    )
+
+    DeletePasskeyDialog(
+        visible = deleteDialog,
+        onConfirmDelete = {
+            viewModel.deletePasskey(passkey.id)
+            viewModel.passkeys.remove(passkey)
+        },
+        onDismiss = {
+            deleteDialog = false
+        }
     )
 
     LaunchedEffect(showCopiedToast) {
@@ -121,7 +134,7 @@ fun PassKeyDetail(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) {
-//                        TODO (DELETE Functionality for PassKey)
+                        deleteDialog = true
                     }
             ) {
                 Icon(
@@ -131,6 +144,7 @@ fun PassKeyDetail(
                 )
             }
         }
+
         // Content
         Column(
             modifier = Modifier
@@ -470,6 +484,35 @@ private fun copyToClipboard(context: Context, label: String, text: String) {
     clipboard.setPrimaryClip(clip)
     Toast.makeText(context, "$label copied to clipboard", Toast.LENGTH_SHORT).show()
 }
+
+@Composable
+fun DeletePasskeyDialog(
+    visible: Boolean,
+    onConfirmDelete: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (visible) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Delete Passkey?") },
+            text = { Text("Are you sure you want to delete this passkey?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirmDelete()
+                    onDismiss()
+                }) {
+                    Text("Delete", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
 
 @Preview(showBackground = false)
 @Composable
