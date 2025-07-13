@@ -1,5 +1,6 @@
 package com.karan.hashin.screens.home
 
+import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -27,14 +28,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.karan.hashin.R
-import com.karan.hashin.model.local.PassKey
-import com.karan.hashin.navigation.Screens
-import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
@@ -49,18 +45,26 @@ fun Passkey(
     val context = LocalContext.current
 
     var service by remember { mutableStateOf("") }
-    var userName by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
     var label by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
 
-    val passkey = if (doEdit) viewModel.passkeys[viewModel.userSelected].also {
-        service = it.service
-        userName = it.userName
-        desc = it.desc
-        label = it.label
-    } else null
+    // Flags
+    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isChanged by remember { mutableStateOf(false) }
+    var serviceError by remember { mutableStateOf(false) }
+    var passError by remember { mutableStateOf(false) }
+
+    val passkey = remember {
+        if (doEdit) viewModel.passkeys[viewModel.userSelected].also {
+            service = it.service
+            username = it.userName
+            desc = it.desc
+            label = it.label
+        }
+        else null
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -102,7 +106,10 @@ fun Passkey(
             ) {
                 OutlinedTextField(
                     value = service,
-                    onValueChange = { service = it },
+                    onValueChange = {
+                        service = it
+                        isChanged = it.trim() != passkey?.service
+                    },
                     label = { Text("Service") },
                     placeholder = { Text("eg. Github", color = Color.Black.copy(alpha = 0.4f)) },
                     leadingIcon = { Icon(Icons.Default.Web, contentDescription = "Website name") },
@@ -113,8 +120,11 @@ fun Passkey(
                     )
                 )
                 OutlinedTextField(
-                    value = userName,
-                    onValueChange = { userName = it },
+                    value = username,
+                    onValueChange = {
+                        username = it
+                        isChanged = it.trim() != passkey?.userName
+                    },
                     label = { Text("Username") },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
                     modifier = Modifier.fillMaxWidth(),
@@ -166,7 +176,10 @@ fun Passkey(
         ) {
             BasicTextField(
                 value = desc,
-                onValueChange = { desc = it },
+                onValueChange = {
+                    desc = it
+                    isChanged = it.trim() != passkey?.desc
+                },
                 decorationBox = { innerTextField ->
                     Box(
                         modifier = Modifier
@@ -193,26 +206,40 @@ fun Passkey(
             listOf("Personal", "Work", "Business", "Social", "Other")
         ) {
             label = it
+            isChanged = it.trim() != passkey?.label
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Save Button
+        // Add/Update Button
         Button(
             onClick = {
-                if (doEdit) {
-                    val newPassKey = PassKey()
-                    viewModel.updatePasskey(newPassKey)
-                } else {
-                    viewModel.addPassKey(service, userName, pass, desc, label)
+                if(service.isBlank()) serviceError = true
+                if(pass.isBlank()) passError = true
+
+                if(!(serviceError || passError)) {
+                    if (doEdit) {
+                        passkey?.let {
+                            val newPassKey =  it.copy(
+                                service = service,
+                                userName = username,
+                                desc = desc,
+                                label = label
+                            )
+                            viewModel.updatePasskey(newPassKey)
+                        } ?: Toast.makeText(context, "Update Error (passkey == null)", Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.addPassKey(service, username, pass, desc, label)
+                    }
+                    // reset input fields
+                    service = ""
+                    username = ""
+                    pass = ""
+                    desc = ""
+                    label = ""
                 }
-                // reset input fields
-                service = ""
-                userName = ""
-                pass = ""
-                desc = ""
-                label = ""
             },
+            enabled = if(doEdit) isChanged else true,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -310,13 +337,5 @@ fun LabelSelector(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun PreviewPassKey() {
-    HashinTheme {
-        Passkey(viewModel<HomeViewModel>(), false)
     }
 }

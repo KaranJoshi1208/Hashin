@@ -26,12 +26,12 @@ class HomeViewModel : ViewModel() {
         getPassKey(user)
     }
 
-    fun addPassKey(service: String, userName: String, pass: String, desc: String, label: String) {
+    fun addPassKey(service: String, username: String, pass: String, desc: String, label: String) {
         viewModelScope.launch(dispatcher) {
             val passKey = PassKey(
                 id = "",
                 service = service,
-                userName = userName,
+                userName = username,
                 pass = pass,
                 desc = desc,
                 label = label)
@@ -51,5 +51,10 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch(dispatcher) {
             repo.updatePasskey(user, newPassKey)
         }
+    }
+
+    fun validateUserInput(service: String, pass: String, onServiceError: () -> Unit, onPassError: () -> Unit) {
+        if(service.isEmpty()) onServiceError()
+        if(pass.isEmpty()) onPassError()
     }
 }
