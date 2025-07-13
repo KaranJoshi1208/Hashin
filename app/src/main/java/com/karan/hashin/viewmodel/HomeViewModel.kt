@@ -1,6 +1,10 @@
 package com.karan.hashin.viewmodel
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,10 +18,18 @@ import kotlinx.coroutines.launch
 class HomeViewModel : ViewModel() {
 
     var isFetchingData = false
+
+    // passkey screen flags
+    var processing by mutableStateOf(false)
+
     // this defines the index of the passkey that user tapped on
     var userSelected = -1
+
+    // data
     var passkeys: SnapshotStateList<PassKey> = mutableStateListOf<PassKey>()
 
+
+    // utilities
     private val user = FirebaseAuth.getInstance().currentUser!!
     private val repo = HomeRepo()
     private val dispatcher = Dispatchers.IO
@@ -26,8 +38,14 @@ class HomeViewModel : ViewModel() {
         getPassKey(user)
     }
 
+    fun detectChange(vararg pairs: Pair<String, String>): Boolean {
+        return pairs.any { it.first != it.second }
+    }
+
+
     fun addPassKey(service: String, username: String, pass: String, desc: String, label: String) {
         viewModelScope.launch(dispatcher) {
+            processing = true
             val passKey = PassKey(
                 id = "",
                 service = service,
@@ -36,6 +54,7 @@ class HomeViewModel : ViewModel() {
                 desc = desc,
                 label = label)
             repo.addPasskey(user, passKey)
+            processing = false
         }
     }
 
@@ -49,12 +68,9 @@ class HomeViewModel : ViewModel() {
 
     fun updatePasskey(newPassKey: PassKey) {
         viewModelScope.launch(dispatcher) {
+            processing = true
             repo.updatePasskey(user, newPassKey)
+            processing = false
         }
-    }
-
-    fun validateUserInput(service: String, pass: String, onServiceError: () -> Unit, onPassError: () -> Unit) {
-        if(service.isEmpty()) onServiceError()
-        if(pass.isEmpty()) onPassError()
     }
 }

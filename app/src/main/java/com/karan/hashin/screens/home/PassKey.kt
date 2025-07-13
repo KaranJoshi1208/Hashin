@@ -108,7 +108,14 @@ fun Passkey(
                     value = service,
                     onValueChange = {
                         service = it
-                        isChanged = it.trim() != passkey?.service
+                        isChanged = passkey?.let {
+                            viewModel.detectChange(
+                                Pair(service, passkey.service),
+                                Pair(username, passkey.userName),
+                                Pair(label, passkey.label),
+                                Pair(desc, passkey.desc)
+                            )
+                        } ?: false
                     },
                     label = { Text("Service") },
                     placeholder = { Text("eg. Github", color = Color.Black.copy(alpha = 0.4f)) },
@@ -123,7 +130,14 @@ fun Passkey(
                     value = username,
                     onValueChange = {
                         username = it
-                        isChanged = it.trim() != passkey?.userName
+                        isChanged = passkey?.let {
+                            viewModel.detectChange(
+                                Pair(service, passkey.service),
+                                Pair(username, passkey.userName),
+                                Pair(label, passkey.label),
+                                Pair(desc, passkey.desc)
+                            )
+                        } ?: false
                     },
                     label = { Text("Username") },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
@@ -178,7 +192,14 @@ fun Passkey(
                 value = desc,
                 onValueChange = {
                     desc = it
-                    isChanged = it.trim() != passkey?.desc
+                    isChanged = passkey?.let {
+                        viewModel.detectChange(
+                            Pair(service, passkey.service),
+                            Pair(username, passkey.userName),
+                            Pair(label, passkey.label),
+                            Pair(desc, passkey.desc)
+                        )
+                    } ?: false
                 },
                 decorationBox = { innerTextField ->
                     Box(
@@ -206,7 +227,14 @@ fun Passkey(
             listOf("Personal", "Work", "Business", "Social", "Other")
         ) {
             label = it
-            isChanged = it.trim() != passkey?.label
+            isChanged = passkey?.let {
+                viewModel.detectChange(
+                    Pair(service, passkey.service),
+                    Pair(username, passkey.userName),
+                    Pair(label, passkey.label),
+                    Pair(desc, passkey.desc)
+                )
+            } ?: false
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -214,22 +242,28 @@ fun Passkey(
         // Add/Update Button
         Button(
             onClick = {
-                if(service.isBlank()) serviceError = true
-                if(pass.isBlank()) passError = true
+                if (service.isBlank()) serviceError = true
+                if (pass.isBlank()) passError = true
 
-                if(!(serviceError || passError)) {
+                if (!serviceError) {
                     if (doEdit) {
                         passkey?.let {
-                            val newPassKey =  it.copy(
+                            val newPassKey = it.copy(
                                 service = service,
                                 userName = username,
                                 desc = desc,
                                 label = label
                             )
                             viewModel.updatePasskey(newPassKey)
-                        } ?: Toast.makeText(context, "Update Error (passkey == null)", Toast.LENGTH_SHORT).show()
+                        } ?: Toast.makeText(
+                            context,
+                            "Update Error (passkey == null)",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
-                        viewModel.addPassKey(service, username, pass, desc, label)
+                        if (!passError) {
+                            viewModel.addPassKey(service, username, pass, desc, label)
+                        }
                     }
                     // reset input fields
                     service = ""
@@ -239,7 +273,7 @@ fun Passkey(
                     label = ""
                 }
             },
-            enabled = if(doEdit) isChanged else true,
+            enabled = if (doEdit) isChanged else true,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -248,11 +282,21 @@ fun Passkey(
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text(
-                text = if (doEdit) "Update" else "Add",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.White
-            )
+            if (viewModel.processing) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier
+                        .size(16.dp)
+                        .padding(end = 8.dp)
+                )
+            } else {
+                Text(
+                    text = if (doEdit) "Update" else "Add",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White
+                )
+            }
         }
     }
 }
