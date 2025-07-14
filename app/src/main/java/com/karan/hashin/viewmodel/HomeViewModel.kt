@@ -42,6 +42,12 @@ class HomeViewModel : ViewModel() {
         return pairs.any { it.first != it.second }
     }
 
+    fun asyncTask(task: () -> Unit) {
+        viewModelScope.launch(dispatcher){
+            task()
+        }
+    }
+
 
     fun addPassKey(service: String, username: String, pass: String, desc: String, label: String) {
         viewModelScope.launch(dispatcher) {

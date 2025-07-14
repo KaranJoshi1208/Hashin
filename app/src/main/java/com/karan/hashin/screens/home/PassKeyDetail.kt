@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.drawable.Icon
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -57,7 +58,7 @@ fun PassKeyDetail(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val passkey = viewModel.passkeys[viewModel.userSelected]
+    val passkey = if (viewModel.userSelected > -1) viewModel.passkeys[viewModel.userSelected] else return
 
     var showSave by remember { mutableStateOf(false) }
     var deleteDialog by remember { mutableStateOf(false) }
@@ -82,7 +83,16 @@ fun PassKeyDetail(
         visible = deleteDialog,
         onConfirmDelete = {
             viewModel.deletePasskey(passkey.id)
-            viewModel.passkeys.remove(passkey)
+            navController.navigate(Screens.HomeGraph.Vault.route) {
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+            viewModel.passkeys.remove(passkey).also {
+                viewModel.userSelected = -1
+                Log.d("#ined", "data =  ${viewModel.passkeys.toList()}")
+            }
         },
         onDismiss = {
             deleteDialog = false
@@ -111,7 +121,7 @@ fun PassKeyDetail(
             Box(
                 modifier = Modifier
                     .scale(scale)
-                    .semantics{ role = Role.Button}
+                    .semantics { role = Role.Button }
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
@@ -129,7 +139,7 @@ fun PassKeyDetail(
             Box(
                 modifier = Modifier
                     .scale(scale)
-                    .semantics{ role = Role.Button}
+                    .semantics { role = Role.Button }
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
@@ -175,7 +185,11 @@ fun PassKeyDetail(
                     ) {
                         IconButton(
                             onClick = {
-                                navController.navigate(Screens.HomeGraph.Passkey.generateRoute(isEdit = true))
+                                navController.navigate(
+                                    Screens.HomeGraph.Passkey.generateRoute(
+                                        isEdit = true
+                                    )
+                                )
                             },
                         ) {
                             Icon(
@@ -439,7 +453,7 @@ private fun PasswordField(
             Box(
                 modifier = Modifier
                     .size(32.dp)
-                    .semantics{ role = Role.Button}
+                    .semantics { role = Role.Button }
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
