@@ -18,15 +18,41 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
 
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    // Primary Scheme
+    primary = Color(0xFF6200EE),
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFF004A77),
+    onPrimaryContainer = Color.White,
+
+    // Secondary Scheme
+    secondary = Color(0xFF9C27B0),
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFF41484D) ,
+    onSecondaryContainer = Color.White,
+
+    // Tertiary Scheme
+    tertiary = Color(0xFFF0F0F0),
+    onTertiary = Color(0xFF666666),
+    tertiaryContainer = Color(0xFF4A4458),
+    onTertiaryContainer = Color.White,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+
+    // Primary Scheme
+    primary = Color(0xFF6200EE),
+    onPrimary = Color.White,
+    primaryContainer = Color.White,
+    onPrimaryContainer = Color.Black,
+
+    // Secondary Scheme
+    secondary = Color(0xFF9C27B0),
+    onSecondary = Color.White,
+    secondaryContainer = Color.White,
+
+    // Tertiary Scheme
+    tertiary = Color(0xFFF0F0F0),
+    onTertiary = Color(0xFF666666),
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -64,7 +90,8 @@ fun HashinTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography
+        typography = Typography,
+
     ) {
         CompositionLocalProvider(
             LocalRippleTheme provides NoRippleTheme,
