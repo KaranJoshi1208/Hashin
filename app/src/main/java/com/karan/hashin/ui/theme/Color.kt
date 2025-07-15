@@ -2,7 +2,11 @@ package com.karan.hashin.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
+
+val iconTintLight = Color(0xFF2962FF)
+val iconTintDark = Color(0xFF82B1FF)
+
+val PurpleA700 = Color(0xFF9C27B0)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
 

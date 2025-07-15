@@ -1,10 +1,15 @@
 package com.karan.hashin.screens.home
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,11 +32,13 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val innerNav = rememberNavController()
+    var selection by remember { mutableIntStateOf(1) }
 
     Scaffold(
         bottomBar = {
             BottomAppBar(
                 toVault = {
+                    selection = 1
                     innerNav.navigate(Screens.HomeGraph.Vault.route) {
                         popUpTo(0) {
                             inclusive = false
@@ -40,6 +47,7 @@ fun HomeScreen(
                     }
                 },
                 toPassKey = {
+                    selection = 2
                     innerNav.navigate(Screens.HomeGraph.Passkey.generateRoute(isEdit = false))
                     {
                         popUpTo(0) {
@@ -49,6 +57,7 @@ fun HomeScreen(
                     }
                 },
                 toSetting = {
+                    selection = 3
                     innerNav.navigate(Screens.HomeGraph.Setting.route)
                     {
                         popUpTo(0) {
@@ -57,6 +66,7 @@ fun HomeScreen(
                         launchSingleTop = true
                     }
                 },
+                selection = selection,
                 modifier = Modifier
             )
         },
