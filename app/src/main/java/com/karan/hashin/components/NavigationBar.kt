@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
@@ -55,15 +58,19 @@ fun NavigationBar(
         ),
         modifier = modifier
             .fillMaxWidth()
-            .height(88.dp)
+            .wrapContentHeight()
+//            .height(88.dp)
 
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = modifier
-                .fillMaxSize()
-                .navigationBarsPadding()
+                .fillMaxWidth()
+//                .navigationBarsPadding()
+                .padding(top = 8.dp)
+                .height(64.dp)
+
         ) {
             Icon(
                 imageVector =Icons.Default.Key ,
@@ -113,6 +120,7 @@ fun NavigationBar(
                     }
             )
         }
+        Spacer(Modifier.navigationBarsPadding())
     }
 }
 
