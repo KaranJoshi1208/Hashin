@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            HashinTheme {
+            HashinTheme(dynamicColor = false) {
                 navController = rememberNavController()
                 NavGraph(navController)
             }

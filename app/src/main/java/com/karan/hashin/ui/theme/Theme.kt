@@ -18,10 +18,13 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
 
+    // Background
+    background = Color(0xFF121212),
+
     // Primary Scheme
     primary = Color.White,   // Icon color
-    primaryContainer = Color.Black,
-    onPrimaryContainer = Color.White,
+    primaryContainer = Color.Black ,
+//    onPrimaryContainer = Color(0xFFEADDFF),
 
     // Secondary Scheme
     secondary = Color(0xFF9C27B0),
@@ -38,10 +41,13 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
 
+    // BackGround
+    background = Color(0xFFFFFBFE),
+
     // Primary Scheme
     primary = Color.Black,
-    primaryContainer = Color.White,
-    onPrimaryContainer = Color.Black,
+    primaryContainer = Color(0xFFEADDFF),
+//    onPrimaryContainer = Color(0xFF21005D),
 
     // Secondary Scheme
     secondary = Color(0xFF9C27B0),
