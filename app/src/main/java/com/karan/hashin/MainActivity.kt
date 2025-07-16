@@ -11,6 +11,7 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
@@ -36,15 +37,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val lightTransparentStyle = SystemBarStyle.light(
-            scrim = TRANSPARENT,
-            darkScrim = TRANSPARENT
-        )
 
-        enableEdgeToEdge(
-            statusBarStyle = lightTransparentStyle,
-            navigationBarStyle = lightTransparentStyle
-        )
 
         setContent {
             HashinTheme(dynamicColor = false) {

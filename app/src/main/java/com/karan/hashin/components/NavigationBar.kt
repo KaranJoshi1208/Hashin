@@ -51,7 +51,7 @@ fun NavigationBar(
     Card(
         shape = RectangleShape,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
@@ -59,7 +59,6 @@ fun NavigationBar(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-//            .height(88.dp)
 
     ) {
         Row(
@@ -67,7 +66,6 @@ fun NavigationBar(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = modifier
                 .fillMaxWidth()
-//                .navigationBarsPadding()
                 .padding(top = 8.dp)
                 .height(64.dp)
 
@@ -93,7 +91,6 @@ fun NavigationBar(
                         color = if(selection == 2) iconTint else MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(percent = 33)
                     )
-//
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Add,
