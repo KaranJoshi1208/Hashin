@@ -9,6 +9,7 @@ val iconTintDark = Color(0xFF82B1FF)
 val PurpleA700 = Color(0xFF9C27B0)
 val BlueSelectionLight = Color(0xFF6200EE)
 val BlueSelectionDark = Color(0xFF82B1FF)
+val Unfocused = Color(red = 147, green = 143, blue = 153)
 
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)

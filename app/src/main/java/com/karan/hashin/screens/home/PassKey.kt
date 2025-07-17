@@ -32,7 +32,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.karan.hashin.R
-import com.karan.hashin.ui.theme.BlueSelectionLight
+import com.karan.hashin.ui.theme.Unfocused
 import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
@@ -121,6 +121,9 @@ fun Passkey(
                     leadingIcon = { Icon(Icons.Default.Web, contentDescription = "Website name") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Unfocused,
+                        unfocusedLeadingIconColor = Unfocused,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         focusedBorderColor = MaterialTheme.colorScheme.outline,
                         focusedLabelColor = MaterialTheme.colorScheme.primary
                     )
@@ -142,6 +145,9 @@ fun Passkey(
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Unfocused,
+                        unfocusedLeadingIconColor = Unfocused,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         focusedBorderColor = MaterialTheme.colorScheme.outline,
                         focusedLabelColor = MaterialTheme.colorScheme.primary
                     )
@@ -169,6 +175,9 @@ fun Passkey(
                     visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Unfocused,
+                        unfocusedLeadingIconColor = Unfocused,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
                         focusedBorderColor = MaterialTheme.colorScheme.outline,
                         focusedLabelColor = MaterialTheme.colorScheme.primary
                     )
@@ -200,17 +209,22 @@ fun Passkey(
                         )
                     } ?: false
                 },
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 decorationBox = { innerTextField ->
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(vertical = 16.dp, horizontal = 20.dp)
                     ) {
                         if (desc.isEmpty()) {
                             Text(
                                 text = "Add a description...",
                                 style = TextStyle(
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = Unfocused,
                                     fontSize = 16.sp
                                 )
                             )
@@ -218,7 +232,6 @@ fun Passkey(
                         innerTextField()
                     }
                 },
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 modifier = Modifier.fillMaxSize()
             )
         }

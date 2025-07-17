@@ -109,7 +109,7 @@ fun PassKeyDetail(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA))
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
         Row(
@@ -132,7 +132,7 @@ fun PassKeyDetail(
                 Icon(
                     Icons.Default.ArrowBackIosNew,
                     contentDescription = "Back",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -150,7 +150,7 @@ fun PassKeyDetail(
                 Icon(
                     Icons.Default.DeleteOutline,
                     contentDescription = "Back",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -159,12 +159,13 @@ fun PassKeyDetail(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 32.dp)
         ) {
             // Header Card with Label
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF3F51B5)
+                    containerColor = Color(0xFF3F51B5)  // TODO(should be dynamic)
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 8.dp
@@ -178,10 +179,13 @@ fun PassKeyDetail(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp)
+                        .padding(horizontal = 24.dp)
+                        .padding(top = 16.dp, bottom = 24.dp)
                 ) {
                     Row(
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
                     ) {
                         IconButton(
                             onClick = {
@@ -206,7 +210,7 @@ fun PassKeyDetail(
                         modifier = Modifier
                             .size(80.dp)
                             .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.2f))
+                            .background(Color.White.copy(alpha = 0.1f))
                     ) {
                         Text(
                             text = passkey.label.firstOrNull()?.uppercase() ?: "",
