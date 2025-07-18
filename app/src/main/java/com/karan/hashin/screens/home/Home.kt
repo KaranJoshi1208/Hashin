@@ -2,13 +2,11 @@ package com.karan.hashin.screens.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,7 +29,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val innerNav = rememberNavController()
-    var selection by remember { mutableIntStateOf(1) }
+    var selection by rememberSaveable { mutableIntStateOf(1) }
 
     Scaffold(
         bottomBar = {
@@ -69,8 +67,6 @@ fun HomeScreen(
                 modifier = Modifier
             )
         },
-//        modifier = Modifier
-//            .navigationBarsPadding()
     ) { pd ->
         NavHost(
             navController = innerNav,

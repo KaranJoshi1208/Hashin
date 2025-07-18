@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.drawable.Icon
+import android.text.Layout
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -116,7 +117,7 @@ fun PassKeyDetail(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(16.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -159,13 +160,13 @@ fun PassKeyDetail(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 32.dp)
+                .padding(16.dp)
         ) {
             // Header Card with Label
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0xFF3F51B5)  // TODO(should be dynamic)
+
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 8.dp
@@ -247,7 +248,7 @@ fun PassKeyDetail(
                 modifier = Modifier
                     .fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 4.dp
@@ -353,7 +354,7 @@ private fun UsernameField(
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF8F9FA)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
@@ -368,8 +369,8 @@ private fun UsernameField(
             Icon(
                 imageVector = Icons.Default.Person,
                 contentDescription = null,
-                tint = Color.Black,
-                modifier = Modifier.size(28.dp)
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
             )
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -391,7 +392,7 @@ private fun UsernameField(
                 Icon(
                     Icons.Default.ContentCopy,
                     contentDescription = "Copy",
-                    tint = Color.Black,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -407,11 +408,9 @@ private fun PasswordField(
     onValueChange: (String) -> Unit
 ) {
 
-    var pass by remember { mutableStateOf("") }
-
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF8F9FA)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
@@ -426,11 +425,9 @@ private fun PasswordField(
             Icon(
                 imageVector = Icons.Default.Lock,
                 contentDescription = null,
-                tint = Color.Black,
-                modifier = Modifier.size(28.dp)
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
             )
-
-            Spacer(modifier = Modifier.width(12.dp))
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -443,34 +440,24 @@ private fun PasswordField(
                     readOnly = !isVisible,
                     visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFFF8F9FA),
-                        unfocusedContainerColor = Color(0xFFF8F9FA),
-                        disabledContainerColor = Color(0xFFF8F9FA),
                         unfocusedIndicatorColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
-                    )
+                    ),
                 )
             }
 
-            // Visibility Toggle Button
-            Box(
+            // Visibility Button
+            IconButton(
+                onClick = onVisibilityToggle,
                 modifier = Modifier
                     .size(32.dp)
-                    .semantics { role = Role.Button }
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        onVisibilityToggle()
-                    }
             ) {
                 Icon(
                     if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                     contentDescription = "Toggle visibility",
-                    tint = Color.Black,
-                    modifier = Modifier
-                        .size(18.dp)
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }

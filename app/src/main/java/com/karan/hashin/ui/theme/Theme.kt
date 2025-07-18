@@ -28,13 +28,13 @@ private val DarkColorScheme = darkColorScheme(
 
     // Primary Scheme
     primary = Color.White,   // Icon color
-    primaryContainer = Color(0xFF292929) ,
+    primaryContainer = Color(0xFF292929),
 //    onPrimaryContainer = Color(0xFFEADDFF),
 
     // Secondary Scheme
     secondary = Color(0xFF9C27B0),
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFF41484D) ,
+    secondaryContainer = Color(0xFF41484D),
     onSecondaryContainer = Color.White,
 
     // Tertiary Scheme
@@ -43,7 +43,17 @@ private val DarkColorScheme = darkColorScheme(
     tertiaryContainer = Color.Black,
     onTertiaryContainer = Color.White,
 
-    outline = BlueSelectionDark
+    outline = BlueSelectionDark,
+
+    // Surface
+    surface = SurfaceDark,
+    surfaceTint = SurfaceDark,
+    surfaceVariant = SurfaceVariantDark,
+    surfaceContainer = Color(0xFF242424),
+    onSurface = Color.White,
+    onSurfaceVariant = Color.White,
+//    surfaceContainerLow = Color(0xFF1B1B1B),
+//    surfaceContainerHigh = Color(0xFF2E2E2E)
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -66,12 +76,19 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = Color(0xFF666666),
     tertiaryContainer = Color.White,
 
-    outline = BlueSelectionLight
+    outline = BlueSelectionLight,
+
+    surface = SurfaceLight,
+    surfaceVariant = SurfaceVariantLight,
+    surfaceContainer = Color(0xFFF7F7F7),
+    surfaceTint = SurfaceLight,
 )
 
 object NoRippleTheme : RippleTheme {
-    @Composable override fun defaultColor() = Color.Unspecified
-    @Composable override fun rippleAlpha() = RippleAlpha(0f, 0f, 0f, 0f)
+    @Composable
+    override fun defaultColor() = Color.Unspecified
+    @Composable
+    override fun rippleAlpha() = RippleAlpha(0f, 0f, 0f, 0f)
 }
 
 @Composable
@@ -115,7 +132,7 @@ fun HashinTheme(
         colorScheme = colorScheme,
         typography = Typography,
 
-    ) {
+        ) {
         CompositionLocalProvider(
             LocalRippleTheme provides NoRippleTheme,
         ) {
