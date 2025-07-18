@@ -32,6 +32,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.karan.hashin.R
+import com.karan.hashin.ui.theme.Blue
+import com.karan.hashin.ui.theme.Gray
+import com.karan.hashin.ui.theme.Purple
 import com.karan.hashin.ui.theme.Unfocused
 import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
@@ -291,7 +294,7 @@ fun Passkey(
                 .fillMaxWidth()
                 .height(56.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF6200EE)
+                containerColor = Blue
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
@@ -366,7 +369,7 @@ fun LabelSelector(
                     }
                     .scale(scale.value),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isSelected) Color(0xFF9C27B0) else Color(0xFFF0F0F0)
+                    containerColor = if (isSelected) Purple else Gray
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = elevation.value

@@ -96,7 +96,7 @@ fun HomeScreen(
             composable(
                 route = Screens.HomeGraph.Setting.route
             ) {
-                Settings(viewModel)
+//                Settings(viewModel)
             }
 
             composable(

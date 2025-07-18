@@ -82,6 +82,9 @@ private val LightColorScheme = lightColorScheme(
     surfaceVariant = SurfaceVariantLight,
     surfaceContainer = Color(0xFFF7F7F7),
     surfaceTint = SurfaceLight,
+    onSurface = Color.Black,
+    onSurfaceVariant = Color.Black,
+
 )
 
 object NoRippleTheme : RippleTheme {
