@@ -28,33 +28,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.karan.hashin.ui.theme.Blue
 import com.karan.hashin.ui.theme.HashinTheme
+import com.karan.hashin.viewmodel.HomeViewModel
 
 @Composable
 fun Settings(
+    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     var isDarkTheme by rememberSaveable { mutableStateOf(false) }
     var scrollState = rememberScrollState(0)
 
-    val infiniteTransition = rememberInfiniteTransition()
-    val profileScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.05f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
             .statusBarsPadding()
-            .padding(16.dp)
             .fillMaxSize()
+            .padding(horizontal = 16.dp)
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
     ) {
@@ -77,16 +70,8 @@ fun Settings(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(100.dp)
-                        .scale(profileScale)
                         .clip(CircleShape)
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.tertiary
-                                )
-                            )
-                        )
+                        .background(MaterialTheme.colorScheme.tertiary)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Person,
@@ -121,10 +106,11 @@ fun Settings(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = null,
+                        tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Edit Profile", style = MaterialTheme.typography.titleMedium)
+                    Text("Edit Profile", style = MaterialTheme.typography.titleMedium, color = Color.White)
                 }
             }
         }
@@ -150,10 +136,12 @@ fun Settings(
                             checked = isDarkTheme,
                             onCheckedChange = { isDarkTheme = it },
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.primary,
-                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                                uncheckedThumbColor = MaterialTheme.colorScheme.primary,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surface,
+                                uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                                checkedThumbColor = MaterialTheme.colorScheme.outline,
+                                checkedTrackColor = MaterialTheme.colorScheme.surface,
+                                checkedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
                     }
@@ -190,9 +178,10 @@ fun Settings(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(bottom = 32.dp)
                 .height(56.dp)
         ) {
-            Text("Sign Out", style = MaterialTheme.typography.titleMedium)
+            Text("Sign Out", style = MaterialTheme.typography.titleMedium, color = Color.White)
         }
     }
 }
@@ -243,7 +232,7 @@ private fun SettingsItem(
 @Composable
 fun PreviewSettingsLight() {
     MaterialTheme() {
-        Settings()
+        Settings(viewModel<HomeViewModel>())
     }
 }
 
