@@ -32,8 +32,9 @@ import com.karan.hashin.ui.theme.HashinTheme
 fun EditProfileScreen() {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var bio by remember { mutableStateOf("") }
 
-    // Professional, neutral background
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +86,16 @@ fun EditProfileScreen() {
                         color = Color(0xFF22223B),
                         modifier = Modifier.padding(bottom = 18.dp)
                     )
-                    // Name Field
+                    // Section: Basic Info
+                    Text(
+                        text = "Basic Information",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF6C6C6C),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 6.dp)
+                    )
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
@@ -100,7 +110,6 @@ fun EditProfileScreen() {
                             cursorColor = Color(0xFF22223B)
                         )
                     )
-                    // Email Field
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -115,6 +124,70 @@ fun EditProfileScreen() {
                             cursorColor = Color(0xFF22223B)
                         )
                     )
+                    OutlinedTextField(
+                        value = phone,
+                        onValueChange = { phone = it },
+                        label = { Text("Phone Number") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF22223B),
+                            unfocusedBorderColor = Color(0xFFE0E0E0),
+                            cursorColor = Color(0xFF22223B)
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    // Section: Bio
+                    Text(
+                        text = "Bio",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF6C6C6C),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 6.dp)
+                    )
+                    OutlinedTextField(
+                        value = bio,
+                        onValueChange = { bio = it },
+                        label = { Text("Short Bio") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(90.dp)
+                            .padding(vertical = 4.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF22223B),
+                            unfocusedBorderColor = Color(0xFFE0E0E0),
+                            cursorColor = Color(0xFF22223B)
+                        ),
+                        maxLines = 3
+                    )
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Divider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+                    Spacer(modifier = Modifier.height(14.dp))
+                    // Section: Security
+                    Text(
+                        text = "Security",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF6C6C6C),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 6.dp)
+                    )
+                    Button(
+                        onClick = { /* Change password action */ },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF22223B))
+                    ) {
+                        Text("Change Password", color = Color.White, fontWeight = FontWeight.Medium)
+                    }
                     Spacer(modifier = Modifier.height(22.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
