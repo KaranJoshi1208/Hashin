@@ -8,12 +8,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.karan.hashin.ui.theme.Blue
 import com.karan.hashin.ui.theme.HashinTheme
@@ -35,7 +38,7 @@ import com.karan.hashin.viewmodel.HomeViewModel
 
 @Composable
 fun Settings(
-    viewModel: HomeViewModel,
+//    viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -52,68 +55,7 @@ fun Settings(
             .verticalScroll(scrollState)
     ) {
         // Profile Card
-        ElevatedCard(
-            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(24.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.tertiary)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Profile",
-                        tint = Color.White,
-                        modifier = Modifier.size(50.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = "John Doe",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "john.doe@example.com",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                Button(
-                    onClick = { /* Edit profile */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Blue
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Edit Profile", style = MaterialTheme.typography.titleMedium, color = Color.White)
-                }
-            }
-        }
+        ProfileCard()
 
         // Settings Options Card
         ElevatedCard(
@@ -169,20 +111,6 @@ fun Settings(
                 )
             }
         }
-
-        Button(
-            onClick = { /* Sign out */ },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error
-            ),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp)
-                .height(56.dp)
-        ) {
-            Text("Sign Out", style = MaterialTheme.typography.titleMedium, color = Color.White)
-        }
     }
 }
 
@@ -228,11 +156,138 @@ private fun SettingsItem(
     }
 }
 
+
+@Composable
+fun ProfileCard(modifier: Modifier = Modifier) {
+    ElevatedCard(
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(top = 12.dp, bottom = 24.dp)
+                .padding(horizontal = 24.dp)
+        ) {
+            IconButton(
+                onClick = {  },
+                modifier = Modifier
+                    .size(32.dp)
+                    .align(Alignment.End)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = "Edit info",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.tertiary)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Profile",
+                        tint = Color.White,
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "John Doe",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "john.doe@example.com",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                }
+
+
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(
+                onClick = { /* Sign out */ },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                ),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {
+                Text("Sign Out", style = MaterialTheme.typography.titleMedium, color = Color.White)
+            }
+        }
+    }
+}
+
+@Composable
+fun AccountEditPopUp(
+    visible: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (visible) {
+        Popup() {
+
+        }
+    }
+}
+
+@Composable
+fun SignOutAlert(
+    visible: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (visible) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Really !?") },
+            text = { Text("Are you sure you want to sign out ?") },
+            confirmButton = {
+                TextButton(onClick = onConfirm) {
+                    Text("Sign Out", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
 @Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun PreviewSettingsLight() {
-    MaterialTheme() {
-        Settings(viewModel<HomeViewModel>())
+    MaterialTheme {
+//        Settings(viewModel<HomeViewModel>())
+        Settings()
     }
 }
 
