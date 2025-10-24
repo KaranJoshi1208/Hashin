@@ -3,6 +3,7 @@ package com.karan.hashin.screens.home
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -48,15 +50,10 @@ fun Vault(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-        // Top App Bar
-//        TopAppBar(
-//            onSearch = {
-//                // TODO: Implement search functionality
-//            }
-//        )
 
         // Content
         Box(
@@ -73,7 +70,7 @@ fun Vault(
                 }
             } else {
                 val data = viewModel.passkeys.also {
-                    Log.d("#ined", "data: ${it.toList()}")
+//                    Log.d("#ined", "data: ${it.toList()}")
                 }
 
                 if (data.isEmpty()) {

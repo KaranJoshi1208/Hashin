@@ -2,14 +2,11 @@ package com.karan.hashin.screens.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,7 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.karan.hashin.components.BottomAppBar
+import com.karan.hashin.components.NavigationBar
 import com.karan.hashin.navigation.Screens
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.viewmodel.HomeViewModel
@@ -32,11 +29,11 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val innerNav = rememberNavController()
-    var selection by remember { mutableIntStateOf(1) }
+    var selection by rememberSaveable { mutableIntStateOf(1) }
 
     Scaffold(
         bottomBar = {
-            BottomAppBar(
+            NavigationBar(
                 toVault = {
                     selection = 1
                     innerNav.navigate(Screens.HomeGraph.Vault.route) {
@@ -70,9 +67,6 @@ fun HomeScreen(
                 modifier = Modifier
             )
         },
-        modifier = Modifier
-            .navigationBarsPadding()
-            .statusBarsPadding()
     ) { pd ->
         NavHost(
             navController = innerNav,

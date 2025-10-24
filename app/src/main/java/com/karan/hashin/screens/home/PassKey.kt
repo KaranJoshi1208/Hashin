@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -31,10 +32,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.karan.hashin.R
+import com.karan.hashin.ui.theme.Blue
+import com.karan.hashin.ui.theme.Gray
+import com.karan.hashin.ui.theme.Purple
+import com.karan.hashin.ui.theme.Unfocused
 import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Passkey(
     viewModel: HomeViewModel,
@@ -70,28 +74,26 @@ fun Passkey(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
 
         Text(
             text = "${if (doEdit) "Update" else "Add"} Passkey ",
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A1A1A)
+            fontWeight = FontWeight.Bold
         )
 
         Text(
             text = "${if (doEdit) "Update" else "Store"} your credentials securely",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 2.dp
@@ -118,12 +120,15 @@ fun Passkey(
                         } ?: false
                     },
                     label = { Text("Service") },
-                    placeholder = { Text("eg. Github", color = Color.Black.copy(alpha = 0.4f)) },
+                    placeholder = { Text("eg. Github", color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)) },
                     leadingIcon = { Icon(Icons.Default.Web, contentDescription = "Website name") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF6200EE),
-                        focusedLabelColor = Color(0xFF6200EE)
+                        unfocusedBorderColor = Unfocused,
+                        unfocusedLeadingIconColor = Unfocused,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
                     )
                 )
                 OutlinedTextField(
@@ -143,8 +148,11 @@ fun Passkey(
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF6200EE),
-                        focusedLabelColor = Color(0xFF6200EE)
+                        unfocusedBorderColor = Unfocused,
+                        unfocusedLeadingIconColor = Unfocused,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
                     )
                 )
 
@@ -170,8 +178,11 @@ fun Passkey(
                     visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF6200EE),
-                        focusedLabelColor = Color(0xFF6200EE)
+                        unfocusedBorderColor = Unfocused,
+                        unfocusedLeadingIconColor = Unfocused,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                        focusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
                     )
                 )
             }
@@ -179,7 +190,7 @@ fun Passkey(
 
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = Color.White
+                containerColor = MaterialTheme.colorScheme.surface
             ),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 2.dp
@@ -201,17 +212,22 @@ fun Passkey(
                         )
                     } ?: false
                 },
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 decorationBox = { innerTextField ->
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(vertical = 16.dp, horizontal = 20.dp)
                     ) {
                         if (desc.isEmpty()) {
                             Text(
                                 text = "Add a description...",
                                 style = TextStyle(
-                                    color = Color.Gray,
+                                    color = Unfocused,
                                     fontSize = 16.sp
                                 )
                             )
@@ -278,7 +294,7 @@ fun Passkey(
                 .fillMaxWidth()
                 .height(56.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF6200EE)
+                containerColor = Blue
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
@@ -353,7 +369,7 @@ fun LabelSelector(
                     }
                     .scale(scale.value),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isSelected) Color(0xFF9C27B0) else Color(0xFFF0F0F0)
+                    containerColor = if (isSelected) Purple else Gray
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = elevation.value
