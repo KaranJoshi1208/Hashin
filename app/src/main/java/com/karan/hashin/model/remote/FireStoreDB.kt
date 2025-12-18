@@ -71,4 +71,18 @@ class FireStoreDB {
             false
         }
     }
+
+    suspend fun deleteUserData(user: FirebaseUser) {
+        try {
+            val vaultRef = db.collection(DB_COLLECTION).document(user.uid).collection(VAULT_COLLECTION)
+            val docs = vaultRef.get().await()
+            docs.documents.forEach { doc ->
+                vaultRef.document(doc.id).delete().await()
+            }
+            db.collection(DB_COLLECTION).document(user.uid).delete().await()
+        } catch (e: Exception) {
+            Log.e("#hashin", "Error deleting user data", e)
+            throw e
+        }
+    }
 }

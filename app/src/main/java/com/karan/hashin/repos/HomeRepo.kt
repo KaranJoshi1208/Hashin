@@ -23,4 +23,6 @@ class HomeRepo(private val dao: DAO, private val remote: FireStoreDB = FireStore
     suspend fun deleteRemote(user: FirebaseUser, id: String): Boolean = remote.deletePasskey(user, id)
 
     suspend fun clearLocal() = dao.clearAll()
+
+    suspend fun deleteUser(user: FirebaseUser) = remote.deleteUserData(user)
 }

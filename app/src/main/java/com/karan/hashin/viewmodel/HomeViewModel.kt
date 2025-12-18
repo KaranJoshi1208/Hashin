@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
@@ -162,6 +163,24 @@ class HomeViewModel : ViewModel() {
             if (currentUser != null) {
                 val remote = repo.syncRemote(currentUser)
                 remote.forEach { repo.upsertLocal(it) }
+            }
+        }
+    }
+
+    fun deleteAccount(onResult: (Boolean, String?) -> Unit) {
+        val currentUser = user ?: return onResult(false, "Not signed in")
+        viewModelScope.launch(dispatcher) {
+            try {
+                repo.deleteUser(currentUser)
+                repo.clearLocal()
+                FirebaseAuth.getInstance().currentUser?.delete()?.await()
+                withContext(Dispatchers.Main) {
+                    passkeys.clear()
+                    userSelected = -1
+                    onResult(true, null)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) { onResult(false, e.message) }
             }
         }
     }
