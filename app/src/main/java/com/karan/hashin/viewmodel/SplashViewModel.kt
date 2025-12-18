@@ -11,7 +11,7 @@ class SplashViewModel : ViewModel() {
     var auth : FirebaseAuth = FirebaseAuth.getInstance()
 
     fun move(action : () -> Unit) = viewModelScope.launch {
-        delay(3500)
+        delay(2000)
         action()
     }
 }

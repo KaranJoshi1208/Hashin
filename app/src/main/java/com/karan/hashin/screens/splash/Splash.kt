@@ -7,11 +7,14 @@ import com.karan.hashin.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.internal.rememberComposableLambda
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,42 +33,41 @@ fun Splash(
     modifier: Modifier = Modifier
 ) {
     var animate by remember { mutableStateOf(false) }
+    val logoPainter =  painterResource(id = R.drawable.vault)
 
-    viewModel.move {
-        navController.navigate(if (viewModel.auth.currentUser != null) Screens.Home.route else Screens.Auth.route) {
-            popUpTo(Screens.Splash.route) {
-                inclusive = true
+    LaunchedEffect(Unit) {
+        animate = true
+        viewModel.move {
+            navController.navigate(if (viewModel.auth.currentUser != null) Screens.Home.route else Screens.Auth.route) {
+                popUpTo(Screens.Splash.route) { inclusive = true }
+                launchSingleTop = true
             }
-            launchSingleTop = true
         }
     }
 
     val scale by animateFloatAsState(
-        targetValue = if(animate) 1f else 0f,
+        targetValue = if (animate) 1f else 0f,
         animationSpec = tween(
-            durationMillis = 1500,
+            durationMillis = 1200,
             easing = FastOutSlowInEasing
         ),
         label = "scale animation"
     )
 
     val alpha by animateFloatAsState(
-        targetValue = if(animate) 1f else 0f,
-        animationSpec = tween(durationMillis = 2000),
+        targetValue = if (animate) 1f else 0f,
+        animationSpec = tween(durationMillis = 1200),
         label = "alpha animation"
     )
-
-    LaunchedEffect(key1 = true) {
-        animate = true
-    }
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.vault),
+            painter = logoPainter,
             contentDescription = "App Logo",
             modifier = Modifier
                 .size(144.dp)

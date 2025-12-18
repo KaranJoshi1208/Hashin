@@ -1,7 +1,7 @@
 package com.karan.hashin
 
 import android.content.Context
-import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,12 +32,14 @@ class MainActivity : ComponentActivity() {
                     navController = rememberNavController()
                     NavGraph(navController)
                 }
-            }
 
-            // Update status bar icon color based on theme
-            LaunchedEffect(darkThemeState.value) {
-                WindowCompat.getInsetsController(window, window.decorView).apply {
-                    isAppearanceLightStatusBars = !darkThemeState.value
+                // Update status bar and navigation bar based on theme
+                LaunchedEffect(darkThemeState.value) {
+                    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+                    insetsController.isAppearanceLightStatusBars = !darkThemeState.value
+                    if (android.os.Build.VERSION.SDK_INT >= 26) {
+                        insetsController.isAppearanceLightNavigationBars = !darkThemeState.value
+                    }
                 }
             }
         }
