@@ -32,8 +32,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.karan.hashin.LocalBiometricAuth
 import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.ui.theme.HashinTheme
+import com.karan.hashin.utils.BiometricAuth
 import com.karan.hashin.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,9 +47,11 @@ fun ViewKey(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val biometric = LocalBiometricAuth.current
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var authError by remember { mutableStateOf<String?>(null) }
 
     var editedService by remember { mutableStateOf(passKey.service) }
     var editedUsername by remember { mutableStateOf(passKey.userName) }
@@ -63,6 +67,28 @@ fun ViewKey(
         )
     )
 
+    fun requireAuth(onAuthed: () -> Unit) {
+        val auth = biometric
+        if (auth == null) {
+            authError = "Biometric/PIN not available"
+            return
+        }
+        auth.authenticate(
+            title = "Confirm identity",
+            subtitle = "Unlock to view password",
+            callback = object : BiometricAuth.Callback {
+                override fun onSuccess() {
+                    authError = null
+                    onAuthed()
+                }
+
+                override fun onFailure(error: String) {
+                    authError = error
+                }
+            }
+        )
+    }
+
     // Delete confirmation dialog
     if (showDeleteDialog) {
         AlertDialog(
@@ -72,9 +98,11 @@ fun ViewKey(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        viewModel.deletePasskey(passKey.id)
-                        showDeleteDialog = false
-                        navController.popBackStack()
+                        requireAuth {
+                            viewModel.deletePasskey(passKey.id)
+                            showDeleteDialog = false
+                            navController.popBackStack()
+                        }
                     },
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.error
@@ -270,7 +298,9 @@ fun ViewKey(
                         onValueChange = { editedPassword = it },
                         label = { Text("Password") },
                         trailingIcon = {
-                            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                            IconButton(onClick = {
+                                requireAuth { isPasswordVisible = !isPasswordVisible }
+                            }) {
                                 Icon(
                                     imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                     contentDescription = "Toggle password visibility"
@@ -325,8 +355,10 @@ fun ViewKey(
             ) {
                 OutlinedButton(
                     onClick = {
-                        copyToClipboard(context, "Username", editedUsername)
-                        copyToClipboard(context, "Password", decryptedPassword)
+                        requireAuth {
+                            copyToClipboard(context, "Username", editedUsername)
+                            copyToClipboard(context, "Password", decryptedPassword)
+                        }
                     },
                     modifier = Modifier.weight(1f)
                 ) {

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.karan.hashin.navigation.Screens
 import com.karan.hashin.viewmodel.SplashViewModel
+import com.karan.hashin.LocalBiometricAuth
 
 @Composable
 fun Splash(
@@ -34,13 +35,44 @@ fun Splash(
 ) {
     var animate by remember { mutableStateOf(false) }
     val logoPainter =  painterResource(id = R.drawable.vault)
+    val biometric = LocalBiometricAuth.current
 
     LaunchedEffect(Unit) {
         animate = true
         viewModel.move {
-            navController.navigate(if (viewModel.auth.currentUser != null) Screens.Home.route else Screens.Auth.route) {
-                popUpTo(Screens.Splash.route) { inclusive = true }
-                launchSingleTop = true
+            if (viewModel.auth.currentUser != null) {
+                val auth = biometric
+                if (auth != null && com.karan.hashin.utils.BiometricAuth.isAvailable(context = navController.context)) {
+                    auth.authenticate(
+                        title = "Unlock Hashin",
+                        subtitle = "Confirm your identity"
+                    ,
+                        callback = object : com.karan.hashin.utils.BiometricAuth.Callback {
+                            override fun onSuccess() {
+                                navController.navigate(Screens.Home.route) {
+                                    popUpTo(Screens.Splash.route) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
+                            override fun onFailure(error: String) {
+                                navController.navigate(Screens.Auth.route) {
+                                    popUpTo(Screens.Splash.route) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
+                        }
+                    )
+                } else {
+                    navController.navigate(Screens.Home.route) {
+                        popUpTo(Screens.Splash.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            } else {
+                navController.navigate(Screens.Auth.route) {
+                    popUpTo(Screens.Splash.route) { inclusive = true }
+                    launchSingleTop = true
+                }
             }
         }
     }

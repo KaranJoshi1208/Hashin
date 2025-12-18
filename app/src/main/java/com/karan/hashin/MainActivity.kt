@@ -1,24 +1,27 @@
 package com.karan.hashin
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.core.view.WindowCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.karan.hashin.navigation.NavGraph
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.ui.theme.LocalDarkTheme
+import com.karan.hashin.utils.BiometricAuth
 
-class MainActivity : ComponentActivity() {
+val LocalBiometricAuth = staticCompositionLocalOf<BiometricAuth?> { null }
+
+class MainActivity : FragmentActivity() {
 
     private lateinit var navController: NavHostController
 
@@ -26,11 +29,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) window.isNavigationBarContrastEnforced = false
-
         setContent {
             val darkThemeState = remember { mutableStateOf(getDarkThemePreference(this)) }
-            CompositionLocalProvider(LocalDarkTheme provides darkThemeState) {
+            val biometricAuth = remember { BiometricAuth(this) }
+            CompositionLocalProvider(
+                LocalDarkTheme provides darkThemeState,
+                LocalBiometricAuth provides biometricAuth
+            ) {
                 HashinTheme {
                     navController = rememberNavController()
                     NavGraph(navController)
