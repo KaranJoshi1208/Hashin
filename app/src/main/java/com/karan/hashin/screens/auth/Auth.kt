@@ -49,11 +49,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.karan.hashin.navigation.Screens
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.utils.isValidEmail
 import com.karan.hashin.viewmodel.AuthViewModel
+import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -65,6 +67,7 @@ fun AuthScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val isNewUser = remember { mutableStateOf(true) }
+    val homeViewModel: HomeViewModel = viewModel()
 
     Box(
         modifier = modifier
@@ -100,6 +103,7 @@ fun AuthScreen(
                         Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                     },
                     navigate = {
+                        homeViewModel.onUserChanged()
                         navController.navigate(Screens.Home.route) {
                             popUpTo(Screens.Auth.route) { inclusive = true }
                             launchSingleTop = true
@@ -117,6 +121,7 @@ fun AuthScreen(
                         Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                     },
                     navigate = {
+                        homeViewModel.onUserChanged()
                         navController.navigate(Screens.Home.route) {
                             popUpTo(Screens.Auth.route) { inclusive = true }
                             launchSingleTop = true

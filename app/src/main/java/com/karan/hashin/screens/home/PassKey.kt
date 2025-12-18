@@ -254,7 +254,7 @@ fun Passkey(
                                     desc = desc,
                                     label = label
                                 )
-                                viewModel.updatePasskey(newPassKey)
+                                viewModel.updatePasskey(null, newPassKey)
                             } ?: Toast.makeText(
                                 context,
                                 "Update Error (passkey == null)",

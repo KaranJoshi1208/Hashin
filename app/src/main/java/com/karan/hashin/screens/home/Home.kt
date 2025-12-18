@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,6 +28,7 @@ import com.karan.hashin.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     val innerNav = rememberNavController()
@@ -100,7 +102,16 @@ fun HomeScreen(
             composable(
                 route = Screens.HomeGraph.Setting.route
             ) {
-                Settings(viewModel, innerNav)
+                Settings(
+                    viewModel,
+                    innerNav,
+                    onSignOut = {
+                        navController.navigate(Screens.Auth.route) {
+                            popUpTo(Screens.Home.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                )
             }
 
             composable(
@@ -116,6 +127,6 @@ fun HomeScreen(
 @Composable
 private fun HomePreview() {
     HashinTheme {
-        HomeScreen(viewModel<HomeViewModel>())
+        HomeScreen(viewModel<HomeViewModel>(), rememberNavController())
     }
 }

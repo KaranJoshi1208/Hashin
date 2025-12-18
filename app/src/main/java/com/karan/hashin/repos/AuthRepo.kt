@@ -19,15 +19,15 @@ class AuthRepo {
 
     private val db = FirebaseFirestore.getInstance()
 
-    fun createUserCollection(user: FirebaseUser) {
-        Log.d("#ined", "Creating user UID document.....")
+    fun createUserDocument(uid: String, name: String?, email: String?) {
+        Log.d("#ined", "Creating user document for UID=$uid ...")
         val data = mapOf(
-            NAME to user.displayName,
-            EMAIL to user.email,
-            UID to user.uid,
-            DT to (FieldValue.serverTimestamp())
+            NAME to (name ?: ""),
+            EMAIL to (email ?: ""),
+            UID to uid,
+            DT to FieldValue.serverTimestamp()
         )
-        db.collection(DB_COLLECTION).document(user.uid).set(data)
+        db.collection(DB_COLLECTION).document(uid).set(data)
             .addOnSuccessListener {
                 Log.d("#ined", "Successfully created UID doc ✔️")
             }

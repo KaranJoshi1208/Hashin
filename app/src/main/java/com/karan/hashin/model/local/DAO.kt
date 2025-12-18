@@ -11,11 +11,17 @@ import kotlinx.coroutines.flow.Flow
 interface DAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addPasskey(passKey: PassKey)
+    suspend fun upsert(passKey: PassKey)
 
-    @Query("SELECT * FROM PASSKEY")
+    @Query("SELECT * FROM passkey ORDER BY updatedAt DESC")
     fun getAll(): Flow<List<PassKey>>
+
+    @Query("DELETE FROM passkey WHERE id = :id")
+    suspend fun deleteById(id: String)
 
     @Delete
     suspend fun delete(passKey: PassKey)
+
+    @Query("DELETE FROM passkey")
+    suspend fun clearAll()
 }

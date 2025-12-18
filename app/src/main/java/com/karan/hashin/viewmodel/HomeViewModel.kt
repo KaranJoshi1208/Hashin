@@ -3,18 +3,22 @@ package com.karan.hashin.viewmodel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.karan.hashin.model.local.Database
 import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.repos.HomeRepo
+import com.karan.hashin.utils.AppContextHolder
+import com.karan.hashin.utils.CryptoManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class HomeViewModel : ViewModel() {
 
@@ -29,14 +33,29 @@ class HomeViewModel : ViewModel() {
     // data
     var passkeys: SnapshotStateList<PassKey> = mutableStateListOf<PassKey>()
 
-
     // utilities
-    private val user = FirebaseAuth.getInstance().currentUser!!
-    private val repo = HomeRepo()
+    private val user get() = FirebaseAuth.getInstance().currentUser
+    private val crypto = CryptoManager()
+    private val repo by lazy {
+        val dao = Database.getDatabase(AppContextHolder.appContext).dao()
+        HomeRepo(dao)
+    }
     private val dispatcher = Dispatchers.IO
 
     init {
-        getPassKey(user)
+        observeLocal()
+        refreshFromRemote()
+    }
+
+    private fun observeLocal() {
+        viewModelScope.launch(dispatcher) {
+            repo.observeLocal().collectLatest { list ->
+                withContext(Dispatchers.Main) {
+                    passkeys.clear()
+                    passkeys.addAll(list)
+                }
+            }
+        }
     }
 
     fun detectChange(vararg pairs: Pair<String, String>): Boolean {
@@ -44,69 +63,105 @@ class HomeViewModel : ViewModel() {
     }
 
     fun asyncTask(task: () -> Unit) {
-        viewModelScope.launch(dispatcher){
-            task()
+        viewModelScope.launch(dispatcher){ task() }
+    }
+
+    fun addPassKey(service: String, username: String, pass: String, desc: String, label: String) {
+        val currentUser = user ?: return
+        viewModelScope.launch(dispatcher) {
+            processing = true
+            val entity = PassKey.fromPlain(
+                id = UUID.randomUUID().toString(),
+                service = service,
+                userName = username,
+                password = pass,
+                desc = desc,
+                label = label,
+                encrypt = crypto::encrypt
+            )
+            repo.upsertLocal(entity)
+            repo.addRemote(currentUser, entity)
+            withContext(Dispatchers.Main) { processing = false }
         }
     }
 
+    fun refreshFromRemote() {
+        val currentUser = user ?: return
+        viewModelScope.launch(dispatcher) {
+            isFetchingData = true
+            val remote = repo.syncRemote(currentUser)
+            repo.clearLocal()
+            remote.forEach { repo.upsertLocal(it) }
+            withContext(Dispatchers.Main) { isFetchingData = false }
+        }
+    }
 
-    fun addPassKey(service: String, username: String, pass: String, desc: String, label: String) {
+    fun updatePasskey(plainPassword: String?, newPassKey: PassKey) {
+        val currentUser = user ?: return
         viewModelScope.launch(dispatcher) {
             processing = true
-            val passKey = PassKey(
-                id = "",
-                service = service,
-                userName = username,
-                pass = pass,
-                desc = desc,
-                label = label
-            )
-            repo.addPasskey(user, passKey)
-            val refreshed = repo.getPasskey(user)
+            val updatedEntity = if (plainPassword != null) {
+                PassKey.fromPlain(
+                    id = newPassKey.id,
+                    service = newPassKey.service,
+                    userName = newPassKey.userName,
+                    password = plainPassword,
+                    desc = newPassKey.desc,
+                    label = newPassKey.label,
+                    encrypt = crypto::encrypt
+                )
+            } else {
+                newPassKey.copy(updatedAt = System.currentTimeMillis())
+            }
+            repo.upsertLocal(updatedEntity)
+            repo.updateRemote(currentUser, updatedEntity)
             withContext(Dispatchers.Main) {
-                passkeys.clear()
-                passkeys.addAll(refreshed)
+                val idx = passkeys.indexOfFirst { it.id == updatedEntity.id }
+                if (idx != -1) passkeys[idx] = updatedEntity
                 processing = false
             }
         }
     }
 
-    fun getPassKey(user: FirebaseUser) {
+    fun deletePasskey(id: String) {
+        val currentUser = user ?: return
         viewModelScope.launch(dispatcher) {
-            isFetchingData = true
-            val refreshed = repo.getPasskey(user)
+            repo.deleteLocal(id)
+            repo.deleteRemote(currentUser, id)
+            withContext(Dispatchers.Main) { userSelected = -1 }
+        }
+    }
+
+    fun decryptPassword(passKey: PassKey): String {
+        return crypto.decrypt(
+            com.karan.hashin.utils.EncryptedData(
+                cipherText = passKey.passwordCipher,
+                iv = passKey.passwordIv
+            )
+        )
+    }
+
+    fun clearLocalData() {
+        viewModelScope.launch(dispatcher) {
+            repo.clearLocal()
             withContext(Dispatchers.Main) {
                 passkeys.clear()
-                passkeys.addAll(refreshed)
-                isFetchingData = false
+                userSelected = -1
             }
         }
     }
 
-    fun updatePasskey(newPassKey: PassKey) {
+    fun onUserChanged() {
+        val currentUser = user
         viewModelScope.launch(dispatcher) {
-            processing = true
-            val success = repo.updatePasskey(user, newPassKey)
-            if (success) {
-                withContext(Dispatchers.Main) {
-                    val idx = passkeys.indexOfFirst { it.id == newPassKey.id }
-                    if (idx != -1) passkeys[idx] = newPassKey
-                    processing = false
-                }
-            } else {
-                withContext(Dispatchers.Main) { processing = false }
+            repo.clearLocal()
+            withContext(Dispatchers.Main) {
+                passkeys.clear()
+                userSelected = -1
             }
-        }
-    }
-
-    fun deletePasskey(id: String) {
-        viewModelScope.launch(dispatcher) {
-            val success = repo.deletePasskey(user, id)
-            if (success) {
-                withContext(Dispatchers.Main) {
-                    passkeys.removeAll { it.id == id }
-                    userSelected = -1
-                }
+            if (currentUser != null) {
+                val remote = repo.syncRemote(currentUser)
+                remote.forEach { repo.upsertLocal(it) }
             }
         }
     }

@@ -57,7 +57,7 @@ class AuthViewModel : ViewModel() {
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 Log.d("#ined", "UID: ${FirebaseAuth.getInstance().currentUser?.uid}, task user uid -> ${this@apply.uid}")
-                                authRepo.createUserCollection(this@apply)
+                                authRepo.createUserDocument(uid = this@apply.uid, name = userName, email = email)
                                 onSuccess()
                             } else {
                                 onFailure(
@@ -101,7 +101,7 @@ class AuthViewModel : ViewModel() {
 
                 val docSnapshot = userDocRef.get().await()
                 if (!docSnapshot.exists()) {
-                    authRepo.createUserCollection(user)
+                    authRepo.createUserDocument(uid = user.uid, name = user.displayName, email = user.email)
                 }
             } ?: return Result.failure(Exception("Authenticated user is null"))
             Result.success(authResult.user)

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings Mock</title>
+  <link rel="stylesheet" href="settings.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top-bar">
+      <button class="icon-btn" aria-label="Back">←</button>
+      <h1>Settings</h1>
+      <div class="spacer"></div>
+    </header>
+
+    <main class="content">
+      <section class="card profile">
+        <div class="profile__row">
+          <div class="avatar">KJ</div>
+          <div class="profile__meta">
+            <div class="profile__name">KJ</div>
+            <div class="profile__email">kjoshi123@gmail.com</div>
+          </div>
+        </div>
+        <hr />
+        <div class="profile__fields">
+          <div>
+            <div class="field-label">Bio</div>
+            <div class="field-value">Developer</div>
+          </div>
+          <div>
+            <div class="field-label">Phone</div>
+            <div class="field-value">+916745255821</div>
+          </div>
+        </div>
+        <button class="ghost" type="button">✎ Edit profile</button>
+      </section>
+
+      <section class="card list">
+        <div class="list__item">
+          <div>
+            <div class="item-title">Appearance</div>
+            <div class="item-sub">Switch between light and dark mode</div>
+          </div>
+          <div class="switch" aria-label="Appearance toggle">
+            <div class="switch__thumb"></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="list__item">
+          <div>
+            <div class="item-title">Notifications</div>
+            <div class="item-sub">Manage notification preferences</div>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="divider"></div>
+        <div class="list__item">
+          <div>
+            <div class="item-title">Security</div>
+            <div class="item-sub">Manage security settings</div>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="divider"></div>
+        <div class="list__item">
+          <div>
+            <div class="item-title">Help &amp; Support</div>
+            <div class="item-sub">Get help and contact support</div>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+      </section>
+
+      <button class="danger" type="button">↩ Sign out</button>
+    </main>
+  </div>
+
+  <nav class="nav" aria-label="Bottom navigation">
+    <a class="nav__item" href="#">
+      <div class="icon-circle">🔑</div>
+      <span>Vault</span>
+    </a>
+    <a class="nav__item" href="#">
+      <div class="icon-circle">＋</div>
+      <span>Add</span>
+    </a>
+    <a class="nav__item active" href="#">
+      <div class="icon-circle">⚙️</div>
+      <span>Settings</span>
+    </a>
+  </nav>
+</body>
+</html>
+

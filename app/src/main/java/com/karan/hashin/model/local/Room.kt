@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 
+@androidx.room.Database(entities = [PassKey::class], version = 1, exportSchema = true)
 abstract class Database : RoomDatabase() {
 
     abstract fun dao(): DAO

@@ -67,7 +67,8 @@ fun PassKeyDetail(
     var isKeyVisible by remember { mutableStateOf(false) }
     var showCopiedToast by remember { mutableStateOf(false) }
 
-    var newKey by remember { mutableStateOf(passkey.pass) }
+    val plainPassword = remember { viewModel.decryptPassword(passkey) }
+    var newKey by remember { mutableStateOf(plainPassword) }
 
     val scale by animateFloatAsState(
         targetValue = 1f,
@@ -274,7 +275,7 @@ fun PassKeyDetail(
                         },
                         onValueChange = {
                             newKey = it
-                            showSave = it.trim() != passkey.pass
+                            showSave = it.trim() != plainPassword
                         }
                     )
                 }
@@ -285,8 +286,7 @@ fun PassKeyDetail(
             if (showSave) {
                 SaveChange(
                     onClick = {
-                        val updated = passkey.copy(pass = newKey)
-                        viewModel.updatePasskey(updated)
+                        viewModel.updatePasskey(newKey, passkey)
                         showSave = false
                         Toast.makeText(context, "Password updated", Toast.LENGTH_SHORT).show()
                     }

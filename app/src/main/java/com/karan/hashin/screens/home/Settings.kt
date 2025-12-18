@@ -1,25 +1,32 @@
 package com.karan.hashin.screens.home
 
-import androidx.compose.animation.core.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.*
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.ui.theme.LocalDarkTheme
 import com.karan.hashin.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,11 +45,13 @@ import kotlinx.coroutines.tasks.await
 fun Settings(
     viewModel: HomeViewModel,
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSignOut: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val darkThemeState = LocalDarkTheme.current
     var isDarkTheme by darkThemeState
+    val coroutineScope = rememberCoroutineScope()
 
     // User data states
     var userName by remember { mutableStateOf("") }
@@ -49,6 +59,8 @@ fun Settings(
     var userBio by remember { mutableStateOf("") }
     var userPhone by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
+    var isSaving by remember { mutableStateOf(false) }
+    var showEditSheet by remember { mutableStateOf(false) }
 
     // Fetch user data from Firestore
     LaunchedEffect(Unit) {
@@ -71,25 +83,13 @@ fun Settings(
         isLoading = false
     }
 
-    // Animation for profile section
-    val infiniteTransition = rememberInfiniteTransition(label = "profile")
-    val profileScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.05f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "profile"
-    )
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings", style = MaterialTheme.typography.headlineSmall) },
+                title = { Text("Settings", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -110,130 +110,88 @@ fun Settings(
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
             item {
-                // Profile Section with Animation
+                // Profile Section simplified
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(24.dp)
-                        ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    shape = RoundedCornerShape(24.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(100.dp)
-                                .scale(profileScale)
-                                .clip(CircleShape)
-                                .background(
-                                    brush = Brush.linearGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.primary,
-                                            MaterialTheme.colorScheme.tertiary
-                                        )
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Profile",
-                                modifier = Modifier.size(50.dp),
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            }
+                            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Text(
+                                    text = if (isLoading) "Loading..." else userName,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.SemiBold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = if (isLoading) "" else userEmail,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                         }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        if (isLoading) {
-                            CircularProgressIndicator()
-                        } else {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("Bio", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(
-                                text = userName,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
+                                text = if (isLoading) "" else userBio,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                minLines = 2
+                            )
+                            Text("Phone", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                text = if (isLoading) "" else userPhone,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
-
-                            Text(
-                                text = userEmail,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "Bio: $userBio",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-
-                            Text(
-                                text = "Phone: $userPhone",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
                         }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        Button(
-                            onClick = { /* TODO: Handle edit profile */ },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            ),
-                            shape = RoundedCornerShape(16.dp)
+                        OutlinedButton(
+                            onClick = { showEditSheet = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                "Edit Profile",
-                                style = MaterialTheme.typography.titleMedium
-                            )
+                            Icon(Icons.Default.Edit, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Edit profile")
                         }
                     }
                 }
             }
 
             item {
-                // Settings Options
+                // Preferences Section
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(24.dp)
-                        ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    shape = RoundedCornerShape(24.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Column {
+                    Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         ListItem(
-                            headlineContent = { Text("Dark Theme") },
+                            headlineContent = { Text("Appearance") },
                             supportingContent = { Text("Switch between light and dark mode") },
                             leadingContent = {
-                                Icon(
-                                    Icons.Default.DarkMode,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
+                                Icon(Icons.Default.DarkMode, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             },
                             trailingContent = {
                                 Switch(
@@ -241,118 +199,167 @@ fun Settings(
                                     onCheckedChange = { newValue ->
                                         isDarkTheme = newValue
                                         setDarkThemePreference(context, newValue)
-                                    },
-                                    colors = SwitchDefaults.colors(
-                                        checkedThumbColor = MaterialTheme.colorScheme.primary,
-                                        checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
-                                    )
+                                    }
                                 )
-                            }
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
-
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         ListItem(
                             headlineContent = { Text("Notifications") },
-                            supportingContent = { Text("Manage your notification preferences") },
-                            leadingContent = {
-                                Icon(
-                                    Icons.Default.Notifications,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            },
-                            trailingContent = {
-                                Icon(
-                                    Icons.Default.ChevronRight,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            modifier = Modifier.clickable { /* TODO: Handle notifications */ }
+                            supportingContent = { Text("Manage notification preferences") },
+                            leadingContent = { Icon(Icons.Default.Notifications, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                            trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            modifier = Modifier.clickable { navController.navigate(ROUTE_NOTIFICATIONS) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
-
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         ListItem(
                             headlineContent = { Text("Security") },
-                            supportingContent = { Text("Manage your security settings") },
-                            leadingContent = {
-                                Icon(
-                                    Icons.Default.Security,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            },
-                            trailingContent = {
-                                Icon(
-                                    Icons.Default.ChevronRight,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            modifier = Modifier.clickable { /* TODO: Handle security */ }
+                            supportingContent = { Text("Manage security settings") },
+                            leadingContent = { Icon(Icons.Default.Security, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                            trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            modifier = Modifier.clickable { navController.navigate(ROUTE_SECURITY) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
-
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         ListItem(
                             headlineContent = { Text("Help & Support") },
                             supportingContent = { Text("Get help and contact support") },
-                            leadingContent = {
-                                Icon(
-                                    Icons.Default.Help,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            },
-                            trailingContent = {
-                                Icon(
-                                    Icons.Default.ChevronRight,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            modifier = Modifier.clickable { /* TODO: Handle help */ }
+                            leadingContent = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                            trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            modifier = Modifier.clickable { navController.navigate(ROUTE_HELP_SUPPORT) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
                     }
                 }
             }
 
             item {
-                // Sign Out Button
-                Button(
-                    onClick = { /* TODO: Handle sign out */ },
+                // Sign Out Button calmer tonal
+                OutlinedButton(
+                    onClick = {
+                        FirebaseAuth.getInstance().signOut()
+                        viewModel.clearLocalData()
+                        onSignOut()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
+                        .height(52.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.6f))
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Logout,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        "Sign Out",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    Text("Sign out")
                 }
+            }
+        }
+    }
+
+    if (showEditSheet) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        var editName by remember { mutableStateOf(userName) }
+        var editBio by remember { mutableStateOf(userBio) }
+        var editPhone by remember { mutableStateOf(userPhone) }
+        var errorText by remember { mutableStateOf<String?>(null) }
+
+        ModalBottomSheet(
+            onDismissRequest = { if (!isSaving) showEditSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text("Edit profile", style = MaterialTheme.typography.titleLarge)
+                OutlinedTextField(
+                    value = editName,
+                    onValueChange = { editName = it },
+                    label = { Text("Name") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = userEmail,
+                    onValueChange = {},
+                    enabled = false,
+                    label = { Text("Email") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = editBio,
+                    onValueChange = { editBio = it },
+                    label = { Text("Bio") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = editPhone,
+                    onValueChange = { editPhone = it },
+                    label = { Text("Phone") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (errorText != null) {
+                    Text(errorText!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick = { if (!isSaving) showEditSheet = false },
+                        modifier = Modifier.weight(1f)
+                    ) { Text("Cancel") }
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                isSaving = true
+                                errorText = null
+                                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                                if (uid == null) {
+                                    errorText = "Not signed in"
+                                    isSaving = false
+                                    return@launch
+                                }
+                                try {
+                                    FirebaseFirestore.getInstance()
+                                        .collection("users")
+                                        .document(uid)
+                                        .update(
+                                            mapOf(
+                                                "name" to editName,
+                                                "bio" to editBio,
+                                                "phone" to editPhone
+                                            )
+                                        ).await()
+                                    userName = editName
+                                    userBio = editBio
+                                    userPhone = editPhone
+                                    showEditSheet = false
+                                } catch (e: Exception) {
+                                    errorText = "Could not save changes"
+                                } finally {
+                                    isSaving = false
+                                }
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        enabled = !isSaving
+                    ) {
+                        if (isSaving) {
+                            CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                            Spacer(Modifier.width(8.dp))
+                        }
+                        Text(if (isSaving) "Saving..." else "Save")
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
             }
         }
     }
@@ -370,3 +377,7 @@ private fun PreviewSetting() {
         Settings(viewModel<HomeViewModel>(), rememberNavController())
     }
 }
+
+private const val ROUTE_NOTIFICATIONS = "notifications"
+private const val ROUTE_SECURITY = "security"
+private const val ROUTE_HELP_SUPPORT = "help_support"

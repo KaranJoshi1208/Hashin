@@ -51,7 +51,8 @@ fun ViewKey(
 
     var editedService by remember { mutableStateOf(passKey.service) }
     var editedUsername by remember { mutableStateOf(passKey.userName) }
-    var editedPassword by remember { mutableStateOf(passKey.pass) }
+    val decryptedPassword = remember { viewModel.decryptPassword(passKey) }
+    var editedPassword by remember { mutableStateOf(decryptedPassword) }
     var editedDescription by remember { mutableStateOf(passKey.desc) }
     var editedLabel by remember { mutableStateOf(passKey.label) }
 
@@ -112,11 +113,10 @@ fun ViewKey(
                                     val updated = passKey.copy(
                                         service = editedService,
                                         userName = editedUsername,
-                                        pass = editedPassword,
                                         desc = editedDescription,
                                         label = editedLabel
                                     )
-                                    viewModel.updatePasskey(updated)
+                                    viewModel.updatePasskey(editedPassword, updated)
                                 }
                                 isEditing = !isEditing
                             }
@@ -264,28 +264,20 @@ fun ViewKey(
                         )
                     )
 
+                    // Password Section
                     OutlinedTextField(
-                        value = editedPassword,
-                        onValueChange = { if (isEditing) editedPassword = it },
+                        value = if (isPasswordVisible) editedPassword else "•".repeat(8),
+                        onValueChange = { editedPassword = it },
                         label = { Text("Password") },
-                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                         trailingIcon = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                                    Icon(
-                                        if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                        contentDescription = "Toggle password visibility"
-                                    )
-                                }
-                                if (!isEditing) {
-                                    IconButton(onClick = { copyToClipboard(context, "Password", editedPassword) }) {
-                                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy password")
-                                    }
-                                }
+                            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                                Icon(
+                                    imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                    contentDescription = "Toggle password visibility"
+                                )
                             }
                         },
-                        visualTransformation = if (isPasswordVisible || isEditing) VisualTransformation.None else PasswordVisualTransformation(),
-                        enabled = isEditing,
+                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -334,7 +326,7 @@ fun ViewKey(
                 OutlinedButton(
                     onClick = {
                         copyToClipboard(context, "Username", editedUsername)
-                        copyToClipboard(context, "Password", editedPassword)
+                        copyToClipboard(context, "Password", decryptedPassword)
                     },
                     modifier = Modifier.weight(1f)
                 ) {
@@ -373,7 +365,6 @@ private fun PreviewViewKey() {
             passKey = PassKey(
                 service = "Netflix",
                 userName = "john.doe@example.com",
-                pass = "password123",
                 desc = "Streaming account",
                 label = "N"
             ),

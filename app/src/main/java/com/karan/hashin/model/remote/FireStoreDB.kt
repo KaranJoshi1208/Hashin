@@ -11,10 +11,6 @@ class FireStoreDB {
     companion object {
         private const val DB_COLLECTION: String = "users"
         private const val VAULT_COLLECTION: String = "vault"
-        private const val NAME: String = "name"
-        private const val EMAIL: String = "email"
-        private const val UID: String = "uid"
-        private const val DT: String = "dateTime"
     }
 
     private val db = FirebaseFirestore.getInstance()
@@ -23,9 +19,9 @@ class FireStoreDB {
         val doc = db.collection(DB_COLLECTION)
             .document(user.uid)
             .collection(VAULT_COLLECTION)
-            .document()
-        passKey.id = doc.id
-        doc.set(passKey).await()
+            .document(passKey.id.ifEmpty { "" })
+        val id = passKey.id.ifEmpty { doc.id }
+        doc.set(passKey.copy(id = id)).await()
     }
 
     suspend fun getPasskey(user: FirebaseUser): List<PassKey> {
@@ -41,7 +37,7 @@ class FireStoreDB {
                 it.toObject(PassKey::class.java)
             }
         } catch (e: Exception) {
-            Log.e("#ined", "Error fetching passkeys from FireStore Cloud DB", e)
+            Log.e("#hashin", "Error fetching passkeys from FireStore", e)
             emptyList()
         }
     }
@@ -52,11 +48,11 @@ class FireStoreDB {
                 .document(user.uid)
                 .collection(VAULT_COLLECTION)
                 .document(newPassKey.id)
-                .set(newPassKey)   // Overwrites the document
+                .set(newPassKey)
                 .await()
             true
         } catch (e: Exception) {
-            Log.e("#ined", "Error updating passkey", e)
+            Log.e("#hashin", "Error updating passkey", e)
             false
         }
     }
@@ -71,7 +67,7 @@ class FireStoreDB {
                 .await()
             true
         } catch(e : Exception) {
-            Log.e("#ined", "Error deleting passkey", e)
+            Log.e("#hashin", "Error deleting passkey", e)
             false
         }
     }
