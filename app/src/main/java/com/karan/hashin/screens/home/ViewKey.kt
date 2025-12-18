@@ -5,9 +5,11 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -17,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +54,13 @@ fun ViewKey(
     var editedPassword by remember { mutableStateOf(passKey.pass) }
     var editedDescription by remember { mutableStateOf(passKey.desc) }
     var editedLabel by remember { mutableStateOf(passKey.label) }
+
+    val accentGradient = Brush.linearGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.secondaryContainer
+        )
+    )
 
     // Delete confirmation dialog
     if (showDeleteDialog) {
@@ -95,26 +105,27 @@ fun ViewKey(
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            if (isEditing) {
-                                // Save changes
-                                val updated = passKey.copy(
-                                    service = editedService,
-                                    userName = editedUsername,
-                                    pass = editedPassword,
-                                    desc = editedDescription,
-                                    label = editedLabel
-                                )
-                                viewModel.updatePasskey(updated)
+                    AnimatedContent(targetState = isEditing, label = "edit_toggle") { editing ->
+                        IconButton(
+                            onClick = {
+                                if (editing) {
+                                    val updated = passKey.copy(
+                                        service = editedService,
+                                        userName = editedUsername,
+                                        pass = editedPassword,
+                                        desc = editedDescription,
+                                        label = editedLabel
+                                    )
+                                    viewModel.updatePasskey(updated)
+                                }
+                                isEditing = !isEditing
                             }
-                            isEditing = !isEditing
+                        ) {
+                            Icon(
+                                imageVector = if (editing) Icons.Default.Save else Icons.Default.Edit,
+                                contentDescription = if (editing) "Save" else "Edit"
+                            )
                         }
-                    ) {
-                        Icon(
-                            if (isEditing) Icons.Default.Save else Icons.Default.Edit,
-                            contentDescription = if (isEditing) "Save" else "Edit"
-                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -134,68 +145,85 @@ fun ViewKey(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            // Label Card
+            // Hero Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
-                ),
-                shape = RoundedCornerShape(16.dp)
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                shape = RoundedCornerShape(20.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp)
+                        .background(accentGradient)
+                        .padding(20.dp)
                 ) {
-                    Text(
-                        text = editedLabel.firstOrNull()?.uppercase() ?: "",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.displayMedium,
-                        fontWeight = FontWeight.W200
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = editedService.ifEmpty { "Service" },
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.headlineSmall,
-                        textAlign = TextAlign.Center
-                    )
-                    if (editedDescription.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(4.dp))
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = editedLabel.take(1).ifEmpty { "•" }.uppercase(),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(999.dp),
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.16f),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.24f))
+                            ) {
+                                Text(
+                                    text = editedLabel.ifEmpty { "No label" },
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
+                        }
                         Text(
-                            text = editedDescription,
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
+                            text = editedService.ifEmpty { "Service" },
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold
                         )
+                        if (editedDescription.isNotEmpty()) {
+                            Text(
+                                text = editedDescription,
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
                 }
             }
 
-            // Details Card
+            // Credentials Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 4.dp
-                ),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Service Field
+                    Text("Credentials", style = MaterialTheme.typography.titleMedium)
+
                     OutlinedTextField(
                         value = editedService,
                         onValueChange = { if (isEditing) editedService = it },
@@ -216,7 +244,6 @@ fun ViewKey(
                         )
                     )
 
-                    // Username Field
                     OutlinedTextField(
                         value = editedUsername,
                         onValueChange = { if (isEditing) editedUsername = it },
@@ -237,24 +264,23 @@ fun ViewKey(
                         )
                     )
 
-                    // Password Field
                     OutlinedTextField(
-                        value = if (isEditing) editedPassword else "••••••••",
+                        value = editedPassword,
                         onValueChange = { if (isEditing) editedPassword = it },
                         label = { Text("Password") },
                         leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                         trailingIcon = {
-                            Row {
-                                if (!isEditing) {
-                                    IconButton(onClick = { copyToClipboard(context, "Password", editedPassword) }) {
-                                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy password")
-                                    }
-                                }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                                     Icon(
                                         if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                         contentDescription = "Toggle password visibility"
                                     )
+                                }
+                                if (!isEditing) {
+                                    IconButton(onClick = { copyToClipboard(context, "Password", editedPassword) }) {
+                                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy password")
+                                    }
                                 }
                             }
                         },
@@ -269,24 +295,63 @@ fun ViewKey(
                 }
             }
 
-            // Delete Button
-            AnimatedVisibility(
-                visible = isEditing,
-                enter = fadeIn() + slideInVertically(),
-                exit = fadeOut() + slideOutVertically()
+            // Meta section
+            Spacer(modifier = Modifier.height(16.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = { showDeleteDialog = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Delete Passkey")
+                    Text("Notes", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    OutlinedTextField(
+                        value = editedDescription,
+                        onValueChange = { if (isEditing) editedDescription = it },
+                        placeholder = { Text("Add a short note") },
+                        leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
+                        enabled = isEditing,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
+            }
+
+            // Action row
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedButton(
+                    onClick = {
+                        copyToClipboard(context, "Username", editedUsername)
+                        copyToClipboard(context, "Password", editedPassword)
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.ContentCopy, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Copy all")
+                }
+                if (isEditing) {
+                    Button(
+                        onClick = { showDeleteDialog = true },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = null)
+                        Spacer(Modifier.width(6.dp))
+                        Text("Delete")
+                    }
                 }
             }
         }
