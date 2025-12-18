@@ -14,9 +14,14 @@ import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -61,6 +66,11 @@ fun Settings(
     var isLoading by remember { mutableStateOf(true) }
     var isSaving by remember { mutableStateOf(false) }
     var showEditSheet by remember { mutableStateOf(false) }
+
+    // New states for sheets
+    var showNotificationsSheet by remember { mutableStateOf(false) }
+    var showSecuritySheet by remember { mutableStateOf(false) }
+    var showHelpSheet by remember { mutableStateOf(false) }
 
     // Fetch user data from Firestore
     LaunchedEffect(Unit) {
@@ -210,7 +220,7 @@ fun Settings(
                             supportingContent = { Text("Manage notification preferences") },
                             leadingContent = { Icon(Icons.Default.Notifications, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                             trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            modifier = Modifier.clickable { navController.navigate(ROUTE_NOTIFICATIONS) },
+                            modifier = Modifier.clickable { showNotificationsSheet = true },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -219,7 +229,7 @@ fun Settings(
                             supportingContent = { Text("Manage security settings") },
                             leadingContent = { Icon(Icons.Default.Security, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                             trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            modifier = Modifier.clickable { navController.navigate(ROUTE_SECURITY) },
+                            modifier = Modifier.clickable { showSecuritySheet = true },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -228,7 +238,7 @@ fun Settings(
                             supportingContent = { Text("Get help and contact support") },
                             leadingContent = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                             trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            modifier = Modifier.clickable { navController.navigate(ROUTE_HELP_SUPPORT) },
+                            modifier = Modifier.clickable { showHelpSheet = true },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                         )
                     }
@@ -360,6 +370,106 @@ fun Settings(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
+            }
+        }
+    }
+
+    if (showNotificationsSheet) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showNotificationsSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text("Notifications", style = MaterialTheme.typography.titleLarge)
+                Text("Control alerts for vault activity, logins, and updates.")
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                    Text("Vault activity")
+                    Switch(checked = true, onCheckedChange = {})
+                }
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                    Text("New device login")
+                    Switch(checked = true, onCheckedChange = {})
+                }
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                    Text("Product updates")
+                    Switch(checked = false, onCheckedChange = {})
+                }
+                Button(onClick = { showNotificationsSheet = false }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
+                    Text("Done")
+                }
+            }
+        }
+    }
+
+    if (showSecuritySheet) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showSecuritySheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text("Security", style = MaterialTheme.typography.titleLarge)
+                Text("Review security tips and sensitive actions.")
+                ListItem(
+                    headlineContent = { Text("Re-authenticate") },
+                    supportingContent = { Text("We may ask you to sign in again before sensitive actions.") },
+                    leadingContent = { Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) }
+                )
+                ListItem(
+                    headlineContent = { Text("Privacy policy") },
+                    supportingContent = { Text("Learn how we protect your data.") },
+                    leadingContent = { Icon(Icons.Default.PrivacyTip, contentDescription = null, tint = MaterialTheme.colorScheme.primary) }
+                )
+                Button(onClick = { showSecuritySheet = false }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
+                    Text("Close")
+                }
+            }
+        }
+    }
+
+    if (showHelpSheet) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showHelpSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text("Help & Support", style = MaterialTheme.typography.titleLarge)
+                Text("Contact us or browse quick links.")
+                ListItem(
+                    headlineContent = { Text("Email support") },
+                    supportingContent = { Text("support@hashin.app") },
+                    leadingContent = { Icon(Icons.Default.Email, contentDescription = null, tint = MaterialTheme.colorScheme.primary) }
+                )
+                ListItem(
+                    headlineContent = { Text("Call us") },
+                    supportingContent = { Text("+1 (800) 555-0100") },
+                    leadingContent = { Icon(Icons.Default.Phone, contentDescription = null, tint = MaterialTheme.colorScheme.primary) }
+                )
+                ListItem(
+                    headlineContent = { Text("Open FAQ") },
+                    supportingContent = { Text("Common questions about security and sync.") },
+                    leadingContent = { Icon(Icons.Default.SupportAgent, contentDescription = null, tint = MaterialTheme.colorScheme.primary) }
+                )
+                Button(onClick = { showHelpSheet = false }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
+                    Text("Close")
+                }
             }
         }
     }
