@@ -3,32 +3,62 @@ package com.karan.hashin.screens.home
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.components.Element
-import com.karan.hashin.components.TopAppBar
 import com.karan.hashin.navigation.Screens
 import com.karan.hashin.viewmodel.HomeViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Vault(
     viewModel: HomeViewModel,
@@ -36,7 +66,7 @@ fun Vault(
     modifier: Modifier = Modifier
 ) {
     val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-    var isExiting = remember { mutableStateOf(false) }
+    val isExiting = remember { mutableStateOf(false) }
 
     BackHandler {
         if (!isExiting.value) {
@@ -45,68 +75,150 @@ fun Vault(
         }
     }
 
-    Column(
+    var query by rememberSaveable { mutableStateOf("") }
+    val filtered = remember { mutableStateListOf<PassKey>() }
+
+    LaunchedEffect(viewModel.passkeys, query) {
+        filtered.clear()
+        val list = viewModel.passkeys
+        if (query.isBlank()) {
+            filtered.addAll(list)
+        } else {
+            filtered.addAll(
+                list.filter {
+                    it.service.contains(query, ignoreCase = true) ||
+                            it.userName.contains(query, ignoreCase = true) ||
+                            it.label.contains(query, ignoreCase = true)
+                }
+            )
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Vault", style = MaterialTheme.typography.headlineSmall) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                )
+            )
+        },
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
-    ) {
-        // Top App Bar
-//        TopAppBar(
-//            onSearch = {
-//                // TODO: Implement search functionality
-//            }
-//        )
-
-        // Content
-        Box(
-            contentAlignment = Alignment.Center,
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            if (viewModel.isFetchingData) {
-                Column(
+            // Search Bar
+            Surface(
+                shadowElevation = 2.dp,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    trailingIcon = if (query.isNotBlank()) {
+                        {
+                            IconButton(onClick = { query = "" }) {
+                                Icon(Icons.Default.Clear, contentDescription = "Clear search")
+                            }
+                        }
+                    } else null,
+                    placeholder = { Text("Search services, usernames, labels") },
                     modifier = Modifier
                         .fillMaxWidth()
-                ) {
-                    Text(text = "Loading...", fontSize = 30.sp)
-                }
-            } else {
-                val data = viewModel.passkeys.also {
-                    Log.d("#ined", "data: ${it.toList()}")
-                }
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    )
+                )
+            }
 
-                if (data.isEmpty()) {
-                    // Empty state
+            // Content
+            Box(
+                contentAlignment = Alignment.TopCenter,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                if (viewModel.isFetchingData) {
                     Column(
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = "No passkeys yet",
-                            fontSize = 24.sp,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        Text(
-                            text = "Tap the + button to add your first passkey",
-                            fontSize = 16.sp,
-                            color = androidx.compose.ui.graphics.Color.Gray
-                        )
+                        CircularProgressIndicator()
+                        Spacer(Modifier.height(16.dp))
+                        Text(text = "Loading vault...", style = MaterialTheme.typography.bodyLarge)
                     }
                 } else {
-                    LazyColumn(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        items(
-                            items = data,
-                            key = { it.id }
-                        ) { passKey ->
-                            Element(passKey) {
-                                viewModel.userSelected = data.indexOf(passKey)
-                                navController.navigate(Screens.HomeGraph.Detail.route) {
+                    val data = filtered.toList().also {
+                        Log.d("#ined", "data: $it")
+                    }
+
+                    if (data.isEmpty()) {
+                        // Empty state
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 64.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Lock,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(72.dp)
+                            )
+                            Text(
+                                text = "No passkeys yet",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Add a passkey or adjust your search",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Button(onClick = {
+                                navController.navigate(Screens.HomeGraph.Passkey.generateRoute(isEdit = false)) {
                                     launchSingleTop = true
+                                }
+                            }) {
+                                Text("Add passkey")
+                            }
+                            if (query.isNotBlank()) {
+                                TextButton(onClick = { query = "" }) { Text("Clear search") }
+                            }
+                            TextButton(onClick = { viewModel.getPassKey(FirebaseAuth.getInstance().currentUser!!) }) {
+                                Text("Retry")
+                            }
+                        }
+                    } else {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(
+                                items = data,
+                                key = { it.id }
+                            ) { passKey ->
+                                Element(passKey) {
+                                    viewModel.userSelected = viewModel.passkeys.indexOfFirst { existing -> existing.id == passKey.id }
+                                    navController.navigate(Screens.HomeGraph.Detail.route) {
+                                        launchSingleTop = true
+                                    }
                                 }
                             }
                         }

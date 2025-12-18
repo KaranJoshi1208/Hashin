@@ -1,6 +1,5 @@
 package com.karan.hashin.components
 
-import com.karan.hashin.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,16 +14,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.karan.hashin.R
 import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.ui.theme.HashinTheme
 
@@ -37,7 +37,7 @@ fun Element(
 
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
@@ -76,7 +76,8 @@ fun Element(
                     text = passKey.userName,
                     fontSize = 14.sp,
                     modifier = Modifier
-                        .padding(start = 4.dp)
+                        .padding(start = 4.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Spacer(
@@ -92,7 +93,7 @@ fun Element(
             ) {
                 Text(
                     text = passKey.label.firstOrNull()?.uppercase() ?: "",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 36.sp,
                 )
             }
@@ -108,13 +109,13 @@ private fun PreviewElement() {
     }
 }
 
-private fun getColorForLabel(label: String): Color {
+private fun getColorForLabel(label: String): androidx.compose.ui.graphics.Color {
     return when (label.lowercase()) {
-        "personal" -> Color(0xFF2196F3) // Blue
-        "work" -> Color(0xFF4CAF50) // Green
-        "business" -> Color(0xFFFF9800) // Orange
-        "social" -> Color(0xFFE91E63) // Pink
-        "other" -> Color(0xFF9C27B0) // Purple
-        else -> Color(0xFFF44336) // Red (default)
+        "personal" -> androidx.compose.ui.graphics.Color(0xFF2196F3) // Blue
+        "work" -> androidx.compose.ui.graphics.Color(0xFF4CAF50) // Green
+        "business" -> androidx.compose.ui.graphics.Color(0xFFFF9800) // Orange
+        "social" -> androidx.compose.ui.graphics.Color(0xFFE91E63) // Pink
+        "other" -> androidx.compose.ui.graphics.Color(0xFF9C27B0) // Purple
+        else -> androidx.compose.ui.graphics.Color(0xFFF44336) // Red (default)
     }
 }

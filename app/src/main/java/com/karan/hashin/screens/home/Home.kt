@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,7 +27,6 @@ import com.karan.hashin.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val innerNav = rememberNavController()
@@ -70,7 +68,7 @@ fun HomeScreen(
                 modifier = Modifier
             )
         },
-        modifier = Modifier
+        modifier = modifier
             .navigationBarsPadding()
             .statusBarsPadding()
     ) { pd ->
@@ -96,13 +94,13 @@ fun HomeScreen(
                 )
             ) {
                 val isEdit = it.arguments?.getBoolean("isEdit") ?: false
-                Passkey(viewModel, isEdit)
+                Passkey(viewModel, isEdit, innerNav)
             }
 
             composable(
                 route = Screens.HomeGraph.Setting.route
             ) {
-                Settings(viewModel)
+                Settings(viewModel, innerNav)
             }
 
             composable(
@@ -118,6 +116,6 @@ fun HomeScreen(
 @Composable
 private fun HomePreview() {
     HashinTheme {
-        HomeScreen(viewModel<HomeViewModel>(), rememberNavController())
+        HomeScreen(viewModel<HomeViewModel>())
     }
 }

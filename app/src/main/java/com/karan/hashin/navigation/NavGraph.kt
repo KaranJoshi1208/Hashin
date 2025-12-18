@@ -47,7 +47,7 @@ fun NavGraph(
             route = Screens.Home.route
         ) {
             val vm : HomeViewModel = viewModel(it)
-            HomeScreen(vm, navController, Modifier)
+            HomeScreen(vm, /*navController,*/ Modifier)
         }
     }
 }

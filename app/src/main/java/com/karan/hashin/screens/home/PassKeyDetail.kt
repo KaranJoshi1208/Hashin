@@ -68,7 +68,6 @@ fun PassKeyDetail(
     var showCopiedToast by remember { mutableStateOf(false) }
 
     var newKey by remember { mutableStateOf(passkey.pass) }
-//    var key by remember { mutableStateOf(passkey.pass) }
 
     val scale by animateFloatAsState(
         targetValue = 1f,
@@ -286,11 +285,10 @@ fun PassKeyDetail(
             if (showSave) {
                 SaveChange(
                     onClick = {
-                        val newPasskey = passkey.copy(
-//                            userName = userName,
-//                            TODO( edit password) ??
-                        )
-//                        viewModel.updatePasskey(newPasskey)
+                        val updated = passkey.copy(pass = newKey)
+                        viewModel.updatePasskey(updated)
+                        showSave = false
+                        Toast.makeText(context, "Password updated", Toast.LENGTH_SHORT).show()
                     }
                 )
             }
@@ -403,8 +401,6 @@ private fun PasswordField(
     onValueChange: (String) -> Unit
 ) {
 
-    var pass by remember { mutableStateOf("") }
-
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF8F9FA)
@@ -479,7 +475,7 @@ fun SaveChange(
     modifier: Modifier = Modifier
 ) {
     Button(
-        onClick = { onClick },
+        onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFAA00FF)
@@ -539,4 +535,4 @@ private fun PreviewPassKeyDetail() {
             onValueChange = {}
         )
     }
-} 
+}

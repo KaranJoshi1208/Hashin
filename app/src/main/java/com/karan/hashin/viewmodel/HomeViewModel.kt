@@ -14,10 +14,11 @@ import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.repos.HomeRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeViewModel : ViewModel() {
 
-    var isFetchingData = false
+    var isFetchingData by mutableStateOf(false)
 
     // passkey screen flags
     var processing by mutableStateOf(false)
@@ -58,31 +59,55 @@ class HomeViewModel : ViewModel() {
                 userName = username,
                 pass = pass,
                 desc = desc,
-                label = label)
+                label = label
+            )
             repo.addPasskey(user, passKey)
-            processing = false
+            val refreshed = repo.getPasskey(user)
+            withContext(Dispatchers.Main) {
+                passkeys.clear()
+                passkeys.addAll(refreshed)
+                processing = false
+            }
         }
     }
 
-    fun getPassKey(user : FirebaseUser) {
+    fun getPassKey(user: FirebaseUser) {
         viewModelScope.launch(dispatcher) {
             isFetchingData = true
-            passkeys.addAll(repo.getPasskey(user))
-            isFetchingData = false
+            val refreshed = repo.getPasskey(user)
+            withContext(Dispatchers.Main) {
+                passkeys.clear()
+                passkeys.addAll(refreshed)
+                isFetchingData = false
+            }
         }
     }
 
     fun updatePasskey(newPassKey: PassKey) {
         viewModelScope.launch(dispatcher) {
             processing = true
-            repo.updatePasskey(user, newPassKey)
-            processing = false
+            val success = repo.updatePasskey(user, newPassKey)
+            if (success) {
+                withContext(Dispatchers.Main) {
+                    val idx = passkeys.indexOfFirst { it.id == newPassKey.id }
+                    if (idx != -1) passkeys[idx] = newPassKey
+                    processing = false
+                }
+            } else {
+                withContext(Dispatchers.Main) { processing = false }
+            }
         }
     }
 
     fun deletePasskey(id: String) {
         viewModelScope.launch(dispatcher) {
-            repo.deletePasskey(user, id)
+            val success = repo.deletePasskey(user, id)
+            if (success) {
+                withContext(Dispatchers.Main) {
+                    passkeys.removeAll { it.id == id }
+                    userSelected = -1
+                }
+            }
         }
     }
 }

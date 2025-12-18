@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -24,12 +23,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.karan.hashin.R
 import com.karan.hashin.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
@@ -39,6 +38,7 @@ import kotlinx.coroutines.launch
 fun Passkey(
     viewModel: HomeViewModel,
     doEdit: Boolean,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
 
@@ -66,129 +66,139 @@ fun Passkey(
         else null
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-            .padding(16.dp)
-    ) {
-
-        Text(
-            text = "${if (doEdit) "Update" else "Add"} Passkey ",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A1A1A)
-        )
-
-        Text(
-            text = "${if (doEdit) "Update" else "Store"} your credentials securely",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White,
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 2.dp
-            ),
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("${if (doEdit) "Edit" else "Add"} Passkey") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                )
+            )
+        },
+        modifier = modifier.fillMaxSize()
+    ) { innerPadding ->
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(innerPadding)
+                .padding(16.dp)
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(16.dp)
+
+            Text(
+                text = "${if (doEdit) "Update" else "Store"} your credentials securely",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
             ) {
-                OutlinedTextField(
-                    value = service,
-                    onValueChange = {
-                        service = it
-                        isChanged = passkey?.let {
-                            viewModel.detectChange(
-                                Pair(service, passkey.service),
-                                Pair(username, passkey.userName),
-                                Pair(label, passkey.label),
-                                Pair(desc, passkey.desc)
-                            )
-                        } ?: false
-                    },
-                    label = { Text("Service") },
-                    placeholder = { Text("eg. Github", color = Color.Black.copy(alpha = 0.4f)) },
-                    leadingIcon = { Icon(Icons.Default.Web, contentDescription = "Website name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF6200EE),
-                        focusedLabelColor = Color(0xFF6200EE)
-                    )
-                )
-                OutlinedTextField(
-                    value = username,
-                    onValueChange = {
-                        username = it
-                        isChanged = passkey?.let {
-                            viewModel.detectChange(
-                                Pair(service, passkey.service),
-                                Pair(username, passkey.userName),
-                                Pair(label, passkey.label),
-                                Pair(desc, passkey.desc)
-                            )
-                        } ?: false
-                    },
-                    label = { Text("Username") },
-                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF6200EE),
-                        focusedLabelColor = Color(0xFF6200EE)
-                    )
-                )
-
-                OutlinedTextField(
-                    value = if (doEdit) "••••••••" else pass,
-                    onValueChange = { pass = it },
-                    enabled = !doEdit,
-                    label = { Text("Password") },
-                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
-                    trailingIcon = {
-                        val image =
-                            if (isPasswordVisible) R.drawable.visibility else R.drawable.visibility_off
-
-                        Icon(
-                            painter = painterResource(id = image),
-                            contentDescription = "Visibility state of password",
-                            modifier = Modifier
-                                .clickable {
-                                    isPasswordVisible = !isPasswordVisible
-                                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    OutlinedTextField(
+                        value = service,
+                        onValueChange = {
+                            service = it
+                            serviceError = false
+                            isChanged = passkey?.let {
+                                viewModel.detectChange(
+                                    Pair(service, passkey.service),
+                                    Pair(username, passkey.userName),
+                                    Pair(label, passkey.label),
+                                    Pair(desc, passkey.desc)
+                                )
+                            } ?: false
+                        },
+                        label = { Text("Service") },
+                        placeholder = { Text("e.g. GitHub") },
+                        leadingIcon = { Icon(Icons.Default.Web, contentDescription = "Website name") },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = serviceError,
+                        supportingText = if (serviceError) {
+                            { Text("Service name is required") }
+                        } else null,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary
                         )
-                    },
-                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF6200EE),
-                        focusedLabelColor = Color(0xFF6200EE)
                     )
-                )
-            }
-        }
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = {
+                            username = it
+                            isChanged = passkey?.let {
+                                viewModel.detectChange(
+                                    Pair(service, passkey.service),
+                                    Pair(username, passkey.userName),
+                                    Pair(label, passkey.label),
+                                    Pair(desc, passkey.desc)
+                                )
+                            } ?: false
+                        },
+                        label = { Text("Username") },
+                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
 
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 2.dp
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-        ) {
-            BasicTextField(
+                    OutlinedTextField(
+                        value = if (doEdit) "••••••••" else pass,
+                        onValueChange = {
+                            pass = it
+                            passError = false
+                        },
+                        enabled = !doEdit,
+                        label = { Text("Password") },
+                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
+                        trailingIcon = {
+                            val image =
+                                if (isPasswordVisible) R.drawable.visibility else R.drawable.visibility_off
+
+                            Icon(
+                                painter = painterResource(id = image),
+                                contentDescription = "Toggle password visibility",
+                                modifier = Modifier
+                                    .clickable {
+                                        isPasswordVisible = !isPasswordVisible
+                                    }
+                            )
+                        },
+                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = passError && !doEdit,
+                        supportingText = if (passError && !doEdit) {
+                            { Text("Password is required") }
+                        } else null,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
+            }
+
+            OutlinedTextField(
                 value = desc,
                 onValueChange = {
                     desc = it
@@ -201,101 +211,90 @@ fun Passkey(
                         )
                     } ?: false
                 },
-                decorationBox = { innerTextField ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        if (desc.isEmpty()) {
-                            Text(
-                                text = "Add a description...",
-                                style = TextStyle(
-                                    color = Color.Gray,
-                                    fontSize = 16.sp
-                                )
-                            )
-                        }
-                        innerTextField()
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        LabelSelector(
-            listOf("Personal", "Work", "Business", "Social", "Other")
-        ) {
-            label = it
-            isChanged = passkey?.let {
-                viewModel.detectChange(
-                    Pair(service, passkey.service),
-                    Pair(username, passkey.userName),
-                    Pair(label, passkey.label),
-                    Pair(desc, passkey.desc)
+                label = { Text("Description (optional)") },
+                placeholder = { Text("Add a description...") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                maxLines = 4,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary
                 )
-            } ?: false
-        }
+            )
 
-        Spacer(modifier = Modifier.weight(1f))
+            LabelSelector(
+                listOf("Personal", "Work", "Business", "Social", "Other")
+            ) {
+                label = it
+                isChanged = passkey?.let {
+                    viewModel.detectChange(
+                        Pair(service, passkey.service),
+                        Pair(username, passkey.userName),
+                        Pair(label, passkey.label),
+                        Pair(desc, passkey.desc)
+                    )
+                } ?: false
+            }
 
-        // Add/Update Button
-        Button(
-            onClick = {
-                if (service.isBlank()) serviceError = true
-                if (pass.isBlank()) passError = true
+            Spacer(modifier = Modifier.weight(1f))
 
-                if (!serviceError) {
-                    if (doEdit) {
-                        passkey?.let {
-                            val newPassKey = it.copy(
-                                service = service,
-                                userName = username,
-                                desc = desc,
-                                label = label
-                            )
-                            viewModel.updatePasskey(newPassKey)
-                        } ?: Toast.makeText(
-                            context,
-                            "Update Error (passkey == null)",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        if (!passError) {
+            // Add/Update Button
+            Button(
+                onClick = {
+                    serviceError = service.isBlank()
+                    if (!doEdit) passError = pass.isBlank()
+
+                    if (!serviceError && (!passError || doEdit)) {
+                        if (doEdit) {
+                            passkey?.let {
+                                val newPassKey = it.copy(
+                                    service = service,
+                                    userName = username,
+                                    desc = desc,
+                                    label = label
+                                )
+                                viewModel.updatePasskey(newPassKey)
+                            } ?: Toast.makeText(
+                                context,
+                                "Update Error (passkey == null)",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
                             viewModel.addPassKey(service, username, pass, desc, label)
                         }
+                        // reset input fields
+                        service = ""
+                        username = ""
+                        pass = ""
+                        desc = ""
+                        label = ""
                     }
-                    // reset input fields
-                    service = ""
-                    username = ""
-                    pass = ""
-                    desc = ""
-                    label = ""
+                },
+                enabled = if (doEdit) isChanged && !viewModel.processing else !viewModel.processing,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                if (viewModel.processing) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier
+                            .size(16.dp)
+                            .padding(end = 8.dp)
+                    )
+                } else {
+                    Text(
+                        text = if (doEdit) "Update" else "Add",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                 }
-            },
-            enabled = if (doEdit) isChanged else true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF6200EE)
-            ),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            if (viewModel.processing) {
-                CircularProgressIndicator(
-                    color = Color.White,
-                    strokeWidth = 2.dp,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .padding(end = 8.dp)
-                )
-            } else {
-                Text(
-                    text = if (doEdit) "Update" else "Add",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White
-                )
             }
         }
     }
@@ -353,7 +352,7 @@ fun LabelSelector(
                     }
                     .scale(scale.value),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isSelected) Color(0xFF9C27B0) else Color(0xFFF0F0F0)
+                    containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = elevation.value
@@ -368,13 +367,13 @@ fun LabelSelector(
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.size(16.dp)
                         )
                     }
                     Text(
                         text = label,
-                        color = if (isSelected) Color.White else Color(0xFF666666),
+                        color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
                         fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
                     )
