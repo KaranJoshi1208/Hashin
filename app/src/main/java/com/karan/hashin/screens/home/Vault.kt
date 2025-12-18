@@ -3,6 +3,7 @@ package com.karan.hashin.screens.home
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Clear
@@ -36,9 +38,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,6 +47,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,6 +74,8 @@ fun Vault(
 ) {
     val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val isExiting = remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
 
     BackHandler {
         if (!isExiting.value) {
@@ -76,21 +85,17 @@ fun Vault(
     }
 
     var query by rememberSaveable { mutableStateOf("") }
-    val filtered = remember { mutableStateListOf<PassKey>() }
-
-    LaunchedEffect(viewModel.passkeys, query) {
-        filtered.clear()
-        val list = viewModel.passkeys
-        if (query.isBlank()) {
-            filtered.addAll(list)
-        } else {
-            filtered.addAll(
-                list.filter {
+    val filtered by remember {
+        derivedStateOf {
+            if (query.isBlank()) {
+                viewModel.passkeys.toList()
+            } else {
+                viewModel.passkeys.filter {
                     it.service.contains(query, ignoreCase = true) ||
-                            it.userName.contains(query, ignoreCase = true) ||
-                            it.label.contains(query, ignoreCase = true)
+                        it.userName.contains(query, ignoreCase = true) ||
+                        it.label.contains(query, ignoreCase = true)
                 }
-            )
+            }
         }
     }
 
@@ -113,11 +118,17 @@ fun Vault(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
+                }
         ) {
             // Search Bar
             Surface(
-                shadowElevation = 2.dp,
-                modifier = Modifier.fillMaxWidth()
+                shadowElevation = 4.dp,
+                color = MaterialTheme.colorScheme.surface,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 OutlinedTextField(
                     value = query,
@@ -125,7 +136,10 @@ fun Vault(
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     trailingIcon = if (query.isNotBlank()) {
                         {
-                            IconButton(onClick = { query = "" }) {
+                            IconButton(onClick = {
+                                query = ""
+                                focusManager.clearFocus()
+                            }) {
                                 Icon(Icons.Default.Clear, contentDescription = "Clear search")
                             }
                         }
@@ -133,11 +147,17 @@ fun Vault(
                     placeholder = { Text("Search services, usernames, labels") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                        .focusRequester(focusRequester),
                     singleLine = true,
+                    shape = RectangleShape,
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
                     )
                 )
             }
@@ -160,9 +180,10 @@ fun Vault(
                         Text(text = "Loading vault...", style = MaterialTheme.typography.bodyLarge)
                     }
                 } else {
-                    val data = filtered.toList().also {
-                        Log.d("#ined", "data: $it")
-                    }
+                    val data = filtered
+//                                        .also {
+//                        Log.d("#ined", "data: $it")
+//                    }
 
                     if (data.isEmpty()) {
                         // Empty state

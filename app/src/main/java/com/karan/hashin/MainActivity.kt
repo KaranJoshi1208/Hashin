@@ -1,6 +1,7 @@
 package com.karan.hashin
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,6 +26,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) window.isNavigationBarContrastEnforced = false
+
         setContent {
             val darkThemeState = remember { mutableStateOf(getDarkThemePreference(this)) }
             CompositionLocalProvider(LocalDarkTheme provides darkThemeState) {
@@ -33,12 +36,11 @@ class MainActivity : ComponentActivity() {
                     NavGraph(navController)
                 }
 
-                // Update status bar and navigation bar based on theme
                 LaunchedEffect(darkThemeState.value) {
-                    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-                    insetsController.isAppearanceLightStatusBars = !darkThemeState.value
-                    if (android.os.Build.VERSION.SDK_INT >= 26) {
-                        insetsController.isAppearanceLightNavigationBars = !darkThemeState.value
+                    val controller = WindowCompat.getInsetsController(window, window.decorView)
+                    controller.isAppearanceLightStatusBars = !darkThemeState.value
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        controller.isAppearanceLightNavigationBars = !darkThemeState.value
                     }
                 }
             }
