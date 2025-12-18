@@ -25,9 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.karan.hashin.ui.theme.HashinTheme
 import com.karan.hashin.ui.theme.LocalDarkTheme
 import com.karan.hashin.viewmodel.HomeViewModel
+import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +42,34 @@ fun Settings(
     val context = LocalContext.current
     val darkThemeState = LocalDarkTheme.current
     var isDarkTheme by darkThemeState
+
+    // User data states
+    var userName by remember { mutableStateOf("") }
+    var userEmail by remember { mutableStateOf("") }
+    var userBio by remember { mutableStateOf("") }
+    var userPhone by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(true) }
+
+    // Fetch user data from Firestore
+    LaunchedEffect(Unit) {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            try {
+                val doc = FirebaseFirestore.getInstance().collection("users").document(user.uid).get().await()
+                userName = doc.getString("name") ?: "Unknown"
+                userEmail = doc.getString("email") ?: user.email ?: "Unknown"
+                userBio = doc.getString("bio") ?: "No bio available"
+                userPhone = doc.getString("phone") ?: "No phone number"
+            } catch (_: Exception) {
+                // Handle error, e.g., show a snackbar or log
+                userName = "Error loading data"
+                userEmail = "Error loading data"
+                userBio = "Error loading data"
+                userPhone = "Error loading data"
+            }
+        }
+        isLoading = false
+    }
 
     // Animation for profile section
     val infiniteTransition = rememberInfiniteTransition(label = "profile")
@@ -58,7 +89,7 @@ fun Settings(
                 title = { Text("Settings", style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -121,18 +152,36 @@ fun Settings(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        Text(
-                            text = "John Doe",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator()
+                        } else {
+                            Text(
+                                text = userName,
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
 
-                        Text(
-                            text = "john.doe@example.com",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                            Text(
+                                text = userEmail,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Bio: $userBio",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Text(
+                                text = "Phone: $userPhone",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(20.dp))
 
@@ -203,7 +252,7 @@ fun Settings(
                             }
                         )
 
-                        Divider(
+                        HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             color = MaterialTheme.colorScheme.outlineVariant
                         )
@@ -228,7 +277,7 @@ fun Settings(
                             modifier = Modifier.clickable { /* TODO: Handle notifications */ }
                         )
 
-                        Divider(
+                        HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             color = MaterialTheme.colorScheme.outlineVariant
                         )
@@ -253,7 +302,7 @@ fun Settings(
                             modifier = Modifier.clickable { /* TODO: Handle security */ }
                         )
 
-                        Divider(
+                        HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             color = MaterialTheme.colorScheme.outlineVariant
                         )
@@ -294,7 +343,7 @@ fun Settings(
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Logout,
+                        imageVector = Icons.Filled.Logout,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp)
                     )

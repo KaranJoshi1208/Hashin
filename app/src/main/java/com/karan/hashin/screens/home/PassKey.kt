@@ -48,7 +48,7 @@ fun Passkey(
     var username by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
-    var label by remember { mutableStateOf("") }
+    var label by remember { mutableStateOf("Personal") }
 
     // Flags
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -224,7 +224,7 @@ fun Passkey(
             )
 
             LabelSelector(
-                listOf("Personal", "Work", "Business", "Social", "Other")
+                listOf("Personal", "Work", "Business", "Game", "Social", "Other")
             ) {
                 label = it
                 isChanged = passkey?.let {

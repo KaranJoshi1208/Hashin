@@ -59,7 +59,7 @@ fun Element(
                 contentDescription = "Element Icon Image",
                 modifier = Modifier
                     .padding(start = 16.dp)
-                    .size(52.dp)
+                    .size(40.dp)
             )
 
             Column(
