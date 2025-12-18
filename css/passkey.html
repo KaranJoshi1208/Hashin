@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Passkey Mock</title>
+  <link rel="stylesheet" href="passkey.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <button class="icon-btn" aria-label="Back">
+        <span aria-hidden="true">←</span>
+      </button>
+      <div class="title-block">
+        <h1>Add Passkey</h1>
+        <p>Store your credentials securely</p>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="card form-card">
+        <label class="field">
+          <span class="field__icon" aria-hidden="true">🪪</span>
+          <input type="text" placeholder="Service" />
+        </label>
+        <label class="field">
+          <span class="field__icon" aria-hidden="true">👤</span>
+          <input type="text" placeholder="Username" />
+        </label>
+        <label class="field">
+          <span class="field__icon" aria-hidden="true">🔒</span>
+          <input type="password" placeholder="Password" />
+          <button class="field__action" type="button" aria-label="Toggle visibility">👁️</button>
+        </label>
+      </section>
+
+      <label class="field multiline">
+        <textarea rows="3" placeholder="Description (optional)"></textarea>
+      </label>
+
+      <section class="chips" aria-label="Labels">
+        <button class="chip chip--active" type="button">✔ Personal</button>
+        <button class="chip" type="button">Work</button>
+        <button class="chip" type="button">Business</button>
+        <button class="chip" type="button">Game</button>
+        <button class="chip" type="button">Social</button>
+        <button class="chip" type="button">Other</button>
+      </section>
+
+      <button class="primary" type="button">Add</button>
+    </main>
+  </div>
+
+  <nav class="nav" aria-label="Bottom navigation">
+    <a class="nav__item" href="#">
+      <div class="icon-circle">🔑</div>
+      <span>Vault</span>
+    </a>
+    <a class="nav__item active" href="#">
+      <div class="icon-circle">＋</div>
+      <span>Add</span>
+    </a>
+    <a class="nav__item" href="#">
+      <div class="icon-circle">⚙️</div>
+      <span>Settings</span>
+    </a>
+  </nav>
+</body>
+</html>
+

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vault UI Mock</title>
+  <style>
+    :root {
+      --bg: #f3f2f6;
+      --card: #e8e7f0;
+      --surface: #ffffff;
+      --shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+      --text: #111218;
+      --muted: #5a5a64;
+      --accent: #f7a40b;
+      --accent2: #e94b44;
+      --border: #d9d8e2;
+      --nav-bg: #e9e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 24px 20px 8px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+    }
+
+    .search-wrapper {
+      padding: 0 20px 16px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 16px;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 0 16px 88px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 1fr 96px;
+      align-items: stretch;
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      min-height: 88px;
+    }
+
+    .item__info {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      align-items: center;
+      padding: 0 14px;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1.2px solid #c3c4d0;
+      display: grid;
+      place-items: center;
+      color: #111;
+      font-size: 28px;
+      background: #f8f8fb;
+    }
+
+    .label strong {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.3px;
+    }
+
+    .label small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .item__tag {
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 26px;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .item__tag--orange { background: var(--accent); }
+    .item__tag--red { background: var(--accent2); }
+
+    /* bottom nav */
+    .nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      background: var(--nav-bg);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .nav__item {
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      text-decoration: none;
+      padding: 8px 0;
+    }
+
+    .nav__item.active {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .icon-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: #d9d8e2;
+      display: grid;
+      place-items: center;
+      color: #333;
+      font-size: 18px;
+    }
+
+    .nav__item.active .icon-circle {
+      background: #cfd0db;
+    }
+  </style>
+</head>
+<body>
+  <header>Vault</header>
+  <div class="search-wrapper">
+    <label class="search-box">
+      <span aria-hidden="true">🔍</span>
+      <input type="search" placeholder="Search services, usernames, labels" />
+    </label>
+  </div>
+
+  <section class="list" id="list"></section>
+
+  <nav class="nav" aria-label="Bottom navigation">
+    <a class="nav__item active" href="#">
+      <div class="icon-circle">🔑</div>
+      <span>Vault</span>
+    </a>
+    <a class="nav__item" href="#">
+      <div class="icon-circle">＋</div>
+      <span>Add</span>
+    </a>
+    <a class="nav__item" href="#">
+      <div class="icon-circle">⚙️</div>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <script>
+    const data = [
+      { service: "PUBG", user: "Krazy-Chaos", tag: "B", color: "orange" },
+      { service: "BGMI", user: "Hunter", tag: "", color: "red" }
+    ];
+
+    const listEl = document.getElementById("list");
+    data.forEach(item => {
+      const card = document.createElement("article");
+      card.className = "item";
+      card.innerHTML = `
+        <div class="item__info">
+          <div class="avatar" aria-hidden="true">👤</div>
+          <div class="label">
+            <strong style="color:${item.color === "orange" ? "#e49300" : "#d1433e"}">${item.service}</strong>
+            <small>${item.user}</small>
+          </div>
+        </div>
+        <div class="item__tag item__tag--${item.color}">${item.tag || ""}</div>
+      `;
+      listEl.appendChild(card);
+    });
+  </script>
+</body>
+</html>
+
