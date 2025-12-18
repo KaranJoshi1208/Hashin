@@ -61,6 +61,7 @@ import com.karan.hashin.model.local.PassKey
 import com.karan.hashin.components.Element
 import com.karan.hashin.navigation.Screens
 import com.karan.hashin.viewmodel.HomeViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +75,8 @@ fun Vault(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
+    val passkeysState by viewModel.passkeysFlow.collectAsStateWithLifecycle()
+
     BackHandler {
         if (!isExiting.value) {
             isExiting.value = true
@@ -82,18 +85,14 @@ fun Vault(
     }
 
     var query by rememberSaveable { mutableStateOf("") }
-    val filtered by remember {
-        derivedStateOf {
-            if (query.isBlank()) {
-                viewModel.passkeys.toList()
-            } else {
-                viewModel.passkeys.filter {
-                    it.service.contains(query, ignoreCase = true) ||
-                        it.userName.contains(query, ignoreCase = true) ||
-                        it.label.contains(query, ignoreCase = true)
-                }
+    val filtered by remember(passkeysState, query) {
+        mutableStateOf(
+            if (query.isBlank()) passkeysState else passkeysState.filter {
+                it.service.contains(query, ignoreCase = true) ||
+                    it.userName.contains(query, ignoreCase = true) ||
+                    it.label.contains(query, ignoreCase = true)
             }
-        }
+        )
     }
 
     Scaffold(
@@ -141,7 +140,7 @@ fun Vault(
                             }
                         }
                     } else null,
-                    placeholder = { Text("Search services, usernames, labels") },
+                    placeholder = { Text("Search") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
@@ -152,7 +151,7 @@ fun Vault(
                     keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface
                     )
@@ -178,9 +177,6 @@ fun Vault(
                     }
                 } else {
                     val data = filtered
-//                                        .also {
-//                        Log.d("#ined", "data: $it")
-//                    }
 
                     if (data.isEmpty()) {
                         // Empty state

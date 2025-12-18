@@ -15,7 +15,10 @@ import com.karan.hashin.utils.AppContextHolder
 import com.karan.hashin.utils.CryptoManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -30,6 +33,9 @@ class HomeViewModel : ViewModel() {
 
     // this defines the index of the passkey that user tapped on
     var userSelected = -1
+
+    private val _passkeysFlow = MutableStateFlow<List<PassKey>>(emptyList())
+    val passkeysFlow: StateFlow<List<PassKey>> = _passkeysFlow
 
     // data
     var passkeys: SnapshotStateList<PassKey> = mutableStateListOf<PassKey>()
@@ -48,12 +54,20 @@ class HomeViewModel : ViewModel() {
         refreshFromRemote()
     }
 
+    private suspend fun replacePasskeysIfChanged(newList: List<PassKey>) {
+        if (passkeys.size == newList.size && passkeys.zip(newList).all { (a, b) -> a.id == b.id && a.updatedAt == b.updatedAt }) {
+            return
+        }
+        passkeys.clear()
+        passkeys.addAll(newList)
+        _passkeysFlow.update { newList }
+    }
+
     private fun observeLocal() {
         viewModelScope.launch(dispatcher) {
             repo.observeLocal().collectLatest { list ->
                 withContext(Dispatchers.Main) {
-                    passkeys.clear()
-                    passkeys.addAll(list)
+                    replacePasskeysIfChanged(list)
                 }
             }
         }
@@ -88,6 +102,7 @@ class HomeViewModel : ViewModel() {
 
     fun refreshFromRemote() {
         val currentUser = user ?: return
+        if (isFetchingData) return
         viewModelScope.launch(dispatcher) {
             isFetchingData = true
             val remote = repo.syncRemote(currentUser)

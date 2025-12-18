@@ -80,7 +80,7 @@ fun Splash(
     val scale by animateFloatAsState(
         targetValue = if (animate) 1f else 0f,
         animationSpec = tween(
-            durationMillis = 1200,
+            durationMillis = 900,
             easing = FastOutSlowInEasing
         ),
         label = "scale animation"
@@ -88,7 +88,7 @@ fun Splash(
 
     val alpha by animateFloatAsState(
         targetValue = if (animate) 1f else 0f,
-        animationSpec = tween(durationMillis = 1200),
+        animationSpec = tween(durationMillis = 900),
         label = "alpha animation"
     )
 
